@@ -1,0 +1,7 @@
+node_modules/
+.pgdata/
+.next/
+dist/
+*.log
+.env
+.env.local

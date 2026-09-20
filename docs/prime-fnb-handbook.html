@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Prime F&amp;B Cost Control — the complete handbook. Why the system exists, every term explained, all seven screens, and the click-by-click demo path.">
+<meta name="color-scheme" content="light dark">
+<style>
+  /* minimal reset — the hosted artifact runtime supplies one; this file needs its own */
+  *,*::before,*::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; }
+  img, svg { max-width: 100%; height: auto; display: block; }
+  table { border-collapse: collapse; }
+  a:focus-visible, button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  @media print {
+    .rail { display: none !important; }
+    .shell { display: block !important; max-width: none !important; padding: 0 !important; }
+    section { break-inside: avoid-page; }
+    body { font-size: 11pt; background: #fff !important; color: #000 !important; }
+  }
+</style>
+</head>
+<body>
+<title>Prime F&amp;B Cost Control — the complete handbook</title>
+
+<style>
+  /* ---------------------------------------------------------------- tokens
+     Extending the palette already in src/app/globals.css so this page reads
+     as the application's sibling: the app's cool blue-grey ink scale, its
+     desaturated Ethiopian-flag green, and semantic colour used only to mean
+     something. */
+  :root {
+    --ground:      #f5f7f9;
+    --surface:     #ffffff;
+    --surface-2:   #eef1f5;
+    --ink:         #1b2029;
+    --ink-strong:  #0d1015;
+    --ink-soft:    #5b6478;
+    --ink-faint:   #8b93a4;
+    --rule:        #dde1e8;
+    --rule-strong: #c3c9d4;
+
+    --accent:      #0f6537;
+    --accent-mid:  #128046;
+    --accent-soft: #e6f4ec;
+
+    --bad:         #a8291d;
+    --bad-soft:    #fdeceb;
+    --warn:        #96530a;
+    --warn-soft:   #fdf3e4;
+    --info:        #0a5f88;
+    --info-soft:   #e7f3fa;
+    --sample:      #5f3aa6;
+    --sample-soft: #f1ecfb;
+
+    --shadow: 0 1px 2px rgba(13,16,21,.05), 0 1px 1px rgba(13,16,21,.04);
+
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+             "Source Serif 4", Cambria, Georgia, serif;
+    --mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, Menlo, monospace;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0d1015;
+      --surface:     #161a21;
+      --surface-2:   #1d222b;
+      --ink:         #e4e7ec;
+      --ink-strong:  #f7f8fa;
+      --ink-soft:    #a6aebf;
+      --ink-faint:   #79839a;
+      --rule:        #2c323d;
+      --rule-strong: #3d4551;
+
+      --accent:      #4ade80;
+      --accent-mid:  #22c55e;
+      --accent-soft: #10251a;
+
+      --bad:         #fda29b;
+      --bad-soft:    #2a1414;
+      --warn:        #fdb022;
+      --warn-soft:   #2a1f0c;
+      --info:        #7cd4fd;
+      --info-soft:   #0a1e2a;
+      --sample:      #c4b0f5;
+      --sample-soft: #1c1630;
+
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0d1015;
+    --surface:     #161a21;
+    --surface-2:   #1d222b;
+    --ink:         #e4e7ec;
+    --ink-strong:  #f7f8fa;
+    --ink-soft:    #a6aebf;
+    --ink-faint:   #79839a;
+    --rule:        #2c323d;
+    --rule-strong: #3d4551;
+
+    --accent:      #4ade80;
+    --accent-mid:  #22c55e;
+    --accent-soft: #10251a;
+
+    --bad:         #fda29b;
+    --bad-soft:    #2a1414;
+    --warn:        #fdb022;
+    --warn-soft:   #2a1f0c;
+    --info:        #7cd4fd;
+    --info-soft:   #0a1e2a;
+    --sample:      #c4b0f5;
+    --sample-soft: #1c1630;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+
+  /* ----------------------------------------------------------------- base */
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .tnum { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  /* --------------------------------------------------------------- layout */
+  .shell {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 56px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px 120px;
+    align-items: start;
+  }
+
+  .rail {
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 40px 0 40px;
+    font-family: var(--sans);
+  }
+
+  .rail h2 {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+
+  .rail ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+  .rail li { counter-increment: toc; }
+  .rail a {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 6px;
+    padding: 5px 0;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.35;
+    border-radius: 4px;
+  }
+  .rail a::before {
+    content: counter(toc, decimal-leading-zero);
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    padding-top: 2px;
+  }
+  .rail a:hover { color: var(--accent); }
+  .rail a:focus-visible { outline: 2px solid var(--accent-mid); outline-offset: 2px; }
+
+  main { padding: 40px 0 0; min-width: 0; }
+  .measure { max-width: var(--measure); }
+
+  /* ----------------------------------------------------------------- head */
+  .masthead {
+    border-bottom: 2px solid var(--ink-strong);
+    padding-bottom: 26px;
+    margin-bottom: 44px;
+  }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  .masthead h1 {
+    font-family: var(--sans);
+    font-size: clamp(30px, 4.4vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    font-weight: 700;
+    color: var(--ink-strong);
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 62ch;
+  }
+  .byline {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+  }
+
+  /* -------------------------------------------------------------- section */
+  section { padding-top: 12px; margin-bottom: 60px; scroll-margin-top: 24px; }
+
+  .part {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-top: 1px solid var(--rule-strong);
+    padding-top: 14px;
+    margin-bottom: 22px;
+  }
+  .part-no {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding-top: 6px;
+  }
+  .part h2 {
+    font-family: var(--sans);
+    font-size: clamp(21px, 2.6vw, 27px);
+    line-height: 1.18;
+    letter-spacing: -0.018em;
+    font-weight: 700;
+    color: var(--ink-strong);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 17px;
+    font-weight: 650;
+    letter-spacing: -0.008em;
+    color: var(--ink-strong);
+    margin: 34px 0 10px;
+    text-wrap: balance;
+  }
+  h4 {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 650;
+    color: var(--ink-strong);
+    margin: 24px 0 8px;
+  }
+
+  p { margin: 0 0 16px; max-width: var(--measure); }
+  ul, ol { max-width: var(--measure); padding-left: 22px; margin: 0 0 18px; }
+  li { margin-bottom: 7px; }
+  li::marker { color: var(--ink-faint); }
+
+  strong { font-weight: 650; color: var(--ink-strong); }
+  em { font-style: italic; }
+  a { color: var(--accent); }
+
+  code {
+    font-family: var(--mono);
+    font-size: .855em;
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--ink-strong);
+  }
+
+  .lead {
+    font-size: 18.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  /* --------------------------------------------------------------- blocks */
+  .note {
+    border-left: 3px solid var(--rule-strong);
+    background: var(--surface);
+    padding: 14px 18px;
+    margin: 0 0 20px;
+    max-width: var(--measure);
+    border-radius: 0 6px 6px 0;
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .note .tag {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .note.rule    { border-left-color: var(--accent-mid); background: var(--accent-soft); }
+  .note.rule .tag { color: var(--accent); }
+  .note.danger  { border-left-color: var(--bad); background: var(--bad-soft); }
+  .note.danger .tag { color: var(--bad); }
+  .note.caution { border-left-color: var(--warn); background: var(--warn-soft); }
+  .note.caution .tag { color: var(--warn); }
+  .note.aside   { border-left-color: var(--info); background: var(--info-soft); }
+  .note.aside .tag { color: var(--info); }
+  .note.sample  { border-left-color: var(--sample); background: var(--sample-soft); }
+  .note.sample .tag { color: var(--sample); }
+
+  /* ---------------------------------------------------------------- table */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 0 0 22px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  table { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: 13.5px; }
+  th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-weight: 700;
+    color: var(--ink-faint);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .mono { font-family: var(--mono); font-size: 12.5px; }
+
+  /* ---------------------------------------------------------------- pills */
+  .pill {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 10.5px;
+    font-weight: 650;
+    letter-spacing: .03em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .pill.ok   { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-mid); }
+  .pill.rev  { color: var(--warn);   background: var(--warn-soft);   border-color: var(--warn); }
+  .pill.inv  { color: var(--bad);    background: var(--bad-soft);    border-color: var(--bad); }
+  .pill.neu  { color: var(--ink-soft); background: var(--surface-2); border-color: var(--rule-strong); }
+
+  /* ------------------------------------------------------------ key/value */
+  .kv {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 0 22px;
+  }
+  .kv > div { background: var(--surface); padding: 14px 16px; }
+  .kv dt {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-weight: 700;
+    color: var(--ink-faint);
+    margin-bottom: 5px;
+  }
+  .kv dd {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 21px;
+    font-weight: 650;
+    color: var(--ink-strong);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+  }
+  .kv .sub {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    margin-top: 5px;
+    line-height: 1.35;
+  }
+
+  /* ----------------------------------------------------------------- tree */
+  .tree {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.85;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 0 0 22px;
+    overflow-x: auto;
+    color: var(--ink);
+    white-space: pre;
+  }
+  .tree .lvl { color: var(--ink-faint); }
+  .tree .sub { color: var(--accent); font-weight: 600; }
+  .tree .raw { color: var(--ink); }
+  .tree .cmt { color: var(--ink-faint); font-style: italic; }
+
+  /* ----------------------------------------------------------------- flow */
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 8px;
+    margin: 0 0 22px;
+  }
+  .flow .step {
+    flex: 1 1 128px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 12px 13px;
+    font-family: var(--sans);
+    min-width: 128px;
+  }
+  .flow .step .n {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .flow .step .t { font-size: 13.5px; font-weight: 650; color: var(--ink-strong); display: block; }
+  .flow .step .d { font-size: 12px; color: var(--ink-soft); line-height: 1.4; margin-top: 4px; display: block; }
+
+  /* ----------------------------------------------------------- step lists */
+  .steps { list-style: none; padding: 0; counter-reset: step; max-width: var(--measure); }
+  .steps > li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+    margin: 0;
+  }
+  .steps > li:last-child { border-bottom: none; }
+  .steps > li::before {
+    content: counter(step);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--surface);
+    background: var(--ink-strong);
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin-top: 2px;
+  }
+  .steps .say {
+    font-style: italic;
+    color: var(--ink-soft);
+    display: block;
+    margin-top: 5px;
+  }
+
+  /* -------------------------------------------------------------- utility */
+  .screen-title {
+    font-family: var(--sans);
+    font-weight: 650;
+    color: var(--ink-strong);
+  }
+  hr.soft { border: none; border-top: 1px solid var(--rule); margin: 30px 0; max-width: var(--measure); }
+
+  .footer {
+    border-top: 2px solid var(--ink-strong);
+    margin-top: 20px;
+    padding-top: 20px;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    max-width: var(--measure);
+  }
+
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; gap: 0; padding: 0 20px 80px; }
+    .rail {
+      position: static;
+      max-height: none;
+      padding: 28px 0 0;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 8px;
+      padding-bottom: 20px;
+    }
+    .rail ol { columns: 2; column-gap: 24px; }
+    body { font-size: 16.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#p1">Why this exists</a></li>
+      <li><a href="#p2">The one big idea</a></li>
+      <li><a href="#p3">Every word you need</a></li>
+      <li><a href="#p4">The rules it will never break</a></li>
+      <li><a href="#p5">What his real data says</a></li>
+      <li><a href="#p6">The screens, one by one</a></li>
+      <li><a href="#p7">The demo, click by click</a></li>
+      <li><a href="#p8">Real vs. invented</a></li>
+      <li><a href="#p9">Deliberately not built</a></li>
+      <li><a href="#p10">Questions for the client</a></li>
+      <li><a href="#p11">Running it</a></li>
+      <li><a href="#p12">Under the hood</a></li>
+      <li><a href="#p13">The four moments</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <header class="masthead">
+      <p class="eyebrow">Prime Hospitality Business Group · Siyonat Branch</p>
+      <h1>F&amp;B Cost Control: the complete handbook</h1>
+      <p class="standfirst">
+        Everything this system is, why it exists, what every word in it means, and exactly how
+        to drive it. Written so that someone who has never seen a stock ledger can read it
+        start to finish and understand the whole thing.
+      </p>
+      <div class="byline">
+        <span>Addis Ababa · Ethiopian birr</span>
+        <span>Engine + 7 screens · 125 automated tests</span>
+        <span>Demo build, August 2026</span>
+      </div>
+    </header>
+
+    <!-- ================================================================== -->
+    <section id="p1">
+      <div class="part"><span class="part-no">01</span><h2>Why this exists at all</h2></div>
+
+      <p class="lead">
+        A restaurant buys food, cooks it, and sells it. Simple. The hard question is the one
+        nobody can answer at the end of the month: <em>did we actually make the money we think
+        we made?</em>
+      </p>
+
+      <p>
+        Imagine you run a shop that sells lemonade. You buy lemons and sugar. You sell cups.
+        At the end of the week you count your money and you count your lemons. If you sold
+        100 cups, you should have used a certain number of lemons. If far more lemons are
+        gone than that, something is wrong — someone spilled a crate, or someone is making
+        cups for their friends, or your recipe is really using twice the lemons you think.
+      </p>
+
+      <p>
+        A restaurant is that, times about five hundred. Prime sells 171 different things.
+        In one 27-day stretch they sold <strong>15,983 items</strong> for
+        <strong class="tnum">8,928,373.06 birr</strong>. Behind those sales, hundreds of
+        kilos of beef, teff, butter and coffee left the store. Nobody wrote down a single one
+        of those movements, because nobody could.
+      </p>
+
+      <h3>The four places money quietly leaves</h3>
+      <ul>
+        <li><strong>Waste</strong> — food spoils, gets dropped, gets burnt.</li>
+        <li><strong>Voids</strong> — an order is rung up then cancelled, but the food was already made.</li>
+        <li><strong>Complimentary</strong> — a dish given away to a guest. A real plate left the kitchen.</li>
+        <li><strong>Staff meals</strong> — the team eats. Real ingredients, no revenue.</li>
+      </ul>
+      <p>
+        Each of these is legitimate. The problem is not that they happen; it is that nobody
+        measures them, so they hide everything else — including theft and over-portioning.
+      </p>
+
+      <h3>What they use today, and why it breaks</h3>
+      <p>
+        Ato Eyob's team runs a spreadsheet. It is a genuinely good spreadsheet: item master,
+        recipes, sub-recipes, wastage log, variance sheets, a monthly reconciliation. It has
+        23 tabs.
+      </p>
+      <p>Spreadsheets like it die the same three deaths.</p>
+      <ul>
+        <li>
+          <strong>History gets rewritten.</strong> Butter goes up in price, so someone types
+          the new price into the cost cell. Every report ever produced from that sheet
+          silently changes. Last month's food cost is now a different number than it was
+          last month. Nobody can ever reconcile anything again.
+        </li>
+        <li>
+          <strong>Stock is a cell you edit.</strong> Someone types over a balance and the
+          trail is gone. There is no way to ask "how did we get to 102 kilos?"
+        </li>
+        <li>
+          <strong>The arithmetic quietly drifts.</strong> In their real workbook, every dish
+          that uses a sub-recipe is <em>under-costed</em> — the sub-recipe line is priced at
+          zero. Their Classic Beef Burger is costed at 106.15 and simply leaves out its own
+          bun. Continental Breakfast is costed at 16.80 with both of its sub-recipes missing.
+        </li>
+      </ul>
+
+      <div class="note danger">
+        <span class="tag">The point</span>
+        <p>
+          This system is not "the spreadsheet, but on a website". It is built so that those
+          three failures are <em>structurally impossible</em>. That is the entire design brief.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p2">
+      <div class="part"><span class="part-no">02</span><h2>The one big idea</h2></div>
+
+      <p class="lead">
+        If you understand nothing else, understand this. Everything else is detail.
+      </p>
+
+      <p>
+        A <strong>recipe</strong> says what should go into a dish. The <strong>till</strong>
+        says how many of that dish were sold. Multiply the two together and you know what
+        <em>should</em> have left the shelf. Then go and look at the shelf. The difference
+        between those two numbers is the whole business of cost control.
+      </p>
+
+      <div class="flow">
+        <div class="step"><span class="n">A</span><span class="t">Recipe</span><span class="d">One Yeajet Kitfo uses 0.25&nbsp;kg of beef</span></div>
+        <div class="step"><span class="n">B</span><span class="t">Till</span><span class="d">We sold 1,392 of them</span></div>
+        <div class="step"><span class="n">C</span><span class="t">Should have used</span><span class="d">348 kg of beef</span></div>
+        <div class="step"><span class="n">D</span><span class="t">Count the shelf</span><span class="d">What is actually there</span></div>
+        <div class="step"><span class="n">E</span><span class="t">The gap</span><span class="d">The thing worth money</span></div>
+      </div>
+
+      <p>
+        Nobody sold beef. They sold kitfo. The system worked out the beef by itself, from the
+        recipe, and moved 348 kilos out of the kitchen without a human typing anything. That
+        is the trick, and once you have seen it, the rest of the system is bookkeeping around it.
+      </p>
+
+      <div class="note aside">
+        <span class="tag">Two different questions</span>
+        <p>
+          There are actually <strong>two</strong> gaps worth measuring, and the system keeps
+          them apart on purpose.
+        </p>
+        <p>
+          <strong>Inventory variance</strong> — what the books say is on the shelf, against
+          what you counted. Catches theft and miscounting.
+        </p>
+        <p>
+          <strong>Theoretical consumption</strong> — what the recipes say should have been
+          used, against what the store actually handed out. Catches recipe drift and
+          over-portioning: the chef using 300 grams where the recipe says 250.
+        </p>
+        <p>
+          They sound similar and they are not. Merging them would hide both. The first has a
+          screen today; the second is computed by the engine and has no screen yet.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p3">
+      <div class="part"><span class="part-no">03</span><h2>Every word you need, explained once</h2></div>
+
+      <p class="lead">
+        This is the vocabulary. Learn these thirteen words and every screen makes sense.
+      </p>
+
+      <h3>Item</h3>
+      <p>
+        A raw thing you buy. Beef, teff flour, butter, coffee beans, a bottle of water. It has
+        a code (<code>RM-BEEF-KITFO</code>), a unit (Kg, Ltr, Bottle) and a cost. There are
+        26 of them seeded. Nothing a guest ever orders is an item.
+      </p>
+
+      <h3>Menu item</h3>
+      <p>
+        A thing a guest can order. Yeajet Kitfo. Macchiato. Mojito. This is what the recipe
+        belongs to.
+      </p>
+
+      <h3>Article</h3>
+      <p>
+        What the till calls it. Prime's POS is called CNET, and inside CNET every button is an
+        "article" with a code like <code>P-00001</code>. The article is the bridge between the
+        till and the menu item.
+      </p>
+      <div class="note caution">
+        <span class="tag">Why the code matters and the name does not</span>
+        <p>
+          In Prime's own export there are two articles both called MOJITO. One is
+          <code>P-00257</code> at <span class="tnum">1,490.68</span> birr. The other is
+          <code>P-00402</code>, spelled <code>" MOJITO"</code> with a leading space, at
+          <span class="tnum">1,614.91</span>. Twenty-one article names carry stray spaces.
+          There are two different SPECIAL TEAs.
+        </p>
+        <p>
+          If the system matched on names it would merge two different drinks at two different
+          prices and quietly corrupt everything downstream. So it matches on the
+          <strong>code</strong>, always, and treats the code as text — because three real
+          codes have no <code>P-</code> prefix at all (<code>00081</code>, <code>00040</code>,
+          <code>00039</code>) and their leading zeros must survive.
+        </p>
+      </div>
+
+      <h3>Recipe</h3>
+      <p>
+        A list of what goes into one portion. Yeajet Kitfo needs beef, ayib, gomen and injera.
+      </p>
+
+      <h3>Sub-recipe</h3>
+      <p>
+        A recipe inside a recipe. Nobody buys niter kibbeh — the kitchen makes a batch of it
+        from butter and spices, and then a spoonful of that batch goes into several dishes.
+      </p>
+      <p>
+        You cost the whole batch once, divide by how much the batch makes, and pull that
+        cost-per-unit into the parent dish. Recipes are therefore a <strong>tree</strong>, not
+        a flat list.
+      </p>
+
+      <div class="tree"><span class="sub">Yeajet Kitfo</span> <span class="cmt">— 407.18 birr a plate</span>
+<span class="lvl">├─</span> <span class="sub">Kitfo Base</span> <span class="cmt">(batch makes 4 portions, 1,242.11 a batch)</span>
+<span class="lvl">│  ├─</span> <span class="raw">Beef, lean minced</span>  1 kg
+<span class="lvl">│  ├─</span> <span class="sub">Niter Kibbeh</span> <span class="cmt">(batch makes 2.7 kg, 2,789.00 a batch)</span>
+<span class="lvl">│  │  ├─</span> <span class="raw">Butter</span>   3 kg
+<span class="lvl">│  │  ├─</span> <span class="raw">Ginger</span>   0.05 kg
+<span class="lvl">│  │  ├─</span> <span class="raw">Garlic</span>   0.05 kg
+<span class="lvl">│  │  ├─</span> <span class="raw">Korarima</span> 0.02 kg
+<span class="lvl">│  │  └─</span> <span class="raw">Besobela</span> 0.02 kg
+<span class="lvl">│  ├─</span> <span class="raw">Mitmita</span> 0.02 kg
+<span class="lvl">│  └─</span> <span class="raw">Salt</span>    0.005 kg
+<span class="lvl">├─</span> <span class="raw">Ayib</span>  0.08 kg
+<span class="lvl">├─</span> <span class="raw">Gomen</span> 0.10 kg
+<span class="lvl">└─</span> <span class="sub">Injera</span> <span class="cmt">(batch makes 12 pieces, 390.30 a batch)</span>
+<span class="lvl">   ├─</span> <span class="raw">Teff flour</span> 3 kg
+<span class="lvl">   └─</span> <span class="raw">Salt</span>       0.01 kg   <span class="cmt">← salt arrives twice, and is added up once</span></div>
+
+      <p>
+        Three levels deep. Notice salt: it comes in through Kitfo Base <em>and</em> through
+        Injera. The system adds those two together into a single line of
+        <span class="tnum">0.002917 kg</span> rather than moving stock twice. Niter Kibbeh is
+        also pulled straight into Fillet Tibes, so one sub-recipe feeds two dishes at two
+        different depths.
+      </p>
+
+      <h3>Store</h3>
+      <p>
+        A place stock physically sits. There are three: <strong>Main Store</strong> (the
+        lock-up), <strong>Outlet Kitchen</strong>, <strong>Outlet Bar</strong>. Goods arrive
+        into Main and get issued out to the Kitchen and Bar, which is where sales deplete from.
+      </p>
+
+      <h3>Stock movement</h3>
+      <p>
+        The single most important idea in the whole build. Every time stock changes, the
+        system writes <em>one new line</em> in a list: what item, which store, plus or minus
+        how much, at what cost, on what date, and why.
+      </p>
+      <p>
+        Stock on hand is never stored anywhere. It is always the sum of that list. Ask "how
+        much beef is in the kitchen?" and the answer is worked out by adding up every line
+        that ever touched beef in the kitchen.
+      </p>
+      <div class="note rule">
+        <span class="tag">Like a bank statement</span>
+        <p>
+          Your bank does not store your balance and edit it. It stores every transaction and
+          adds them up. You can always ask how you got here. This system works exactly the
+          same way, and for exactly the same reason.
+        </p>
+      </div>
+
+      <h3>Moving weighted average cost</h3>
+      <p>
+        You bought 300 kg of beef at 1,100 birr, then another 300 kg at 1,150. What does a
+        kilo cost now? The average, weighted by how much you bought: <strong class="tnum">1,125.00</strong>.
+      </p>
+      <p>
+        When beef leaves the kitchen for a sale, it leaves at 1,125 — not at the old price, not
+        at the new one. Buying stock moves the average. Using stock does not.
+      </p>
+
+      <h3>Cost version</h3>
+      <p>
+        A price with a date range attached. Butter was 900 birr from 1 July. On 1 August it
+        became 1,150. Both facts are kept forever, side by side. Nothing is overwritten.
+      </p>
+      <p>
+        Ask what Yeajet Kitfo cost on 15 July and you get <strong class="tnum">407.18</strong>.
+        Ask what it costs on 15 August and you get <strong class="tnum">415.51</strong>. Both
+        answers are correct, and the July answer will still be 407.18 in five years.
+      </p>
+
+      <h3>Depletion</h3>
+      <p>
+        The automatic removal of ingredients from a store when something is sold. You post
+        the day's sales; the recipes explode; the stock moves.
+      </p>
+
+      <h3>Coverage</h3>
+      <p>
+        The honest number. What percentage of the money taken could the system actually cost?
+      </p>
+      <p>
+        Right now there are 8 recipes against 171 articles, so coverage is
+        <strong class="tnum">43.01%</strong>. The other
+        <strong class="tnum">5,088,483.35 birr</strong> of sales has no recipe behind it, so
+        the system says so plainly rather than pretending. As recipes get written, this climbs.
+      </p>
+
+      <h3>Theoretical vs. actual</h3>
+      <p>
+        <strong>Theoretical</strong> = what the books say should be there.
+        <strong>Actual</strong> = what a human counted.
+      </p>
+
+      <h3>Variance, and the three words</h3>
+      <p>Theoretical minus actual, in quantity and in birr, graded:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Status</th><th>When</th><th>What it means</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="pill ok">OK</span></td><td class="num">within 3%</td><td>Normal. Scales and spoons are not perfect.</td></tr>
+            <tr><td><span class="pill rev">REVIEW</span></td><td class="num">3% – 8%</td><td>Worth a question. Ask the section head.</td></tr>
+            <tr><td><span class="pill inv">INVESTIGATE</span></td><td class="num">over 8%</td><td>Something is wrong. Find out what.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        One exception: if the books say zero and you counted something, that is always
+        INVESTIGATE. A percentage of nothing is meaningless.
+      </p>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p4">
+      <div class="part"><span class="part-no">04</span><h2>The seven rules it will never break</h2></div>
+
+      <p class="lead">
+        These are not preferences or good intentions. Each one is enforced by the database
+        itself, so no future change — including a careless one — can undo them.
+      </p>
+
+      <div class="note rule">
+        <span class="tag">Rule 1</span>
+        <p><strong>Stock on hand is never stored.</strong> There is no balance column anywhere. Stock is always the sum of the movement list. You cannot corrupt a number that does not exist.</p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Rule 2</span>
+        <p><strong>Nothing is edited or deleted after posting.</strong> The database physically refuses. Try to change a posted stock movement and it throws an error telling you to post a reversing entry instead. A correction is a new line, never an erasure.</p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Rule 3</span>
+        <p><strong>Costs and recipes are versioned by date.</strong> Changing a price today cannot change last month's report. This is the single biggest failure of the spreadsheet and the main reason he is buying software.</p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Rule 4</span>
+        <p><strong>Exact decimals, never floating point.</strong> Computers store 0.1 + 0.2 as 0.30000000000000004. Over 15,983 lines that becomes real money and an accountant finds it. Every figure here is fixed-point, and a test proves the code rounds the same way the database does — half away from zero, the way an accountant expects.</p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Rule 5</span>
+        <p><strong>Every table is scoped to a tenant.</strong> Prime may add branches or companies later. The column and the discipline start now, even though there is one tenant today.</p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Rule 6</span>
+        <p><strong>An import that does not reconcile does not post.</strong> The lines must add up to the total printed at the bottom of his own report — exactly, to the last decimal. If they don't, the button stays off.</p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Rule 7</span>
+        <p><strong>Revenue always posts; depletion is best-effort.</strong> Every sale is recorded whether or not a recipe exists. Only lines with a recipe move stock; the rest are flagged as uncosted, never dropped. With 8 recipes against 171 articles, a system that refused to post until everything had a recipe would never post at all.</p>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p5">
+      <div class="part"><span class="part-no">05</span><h2>What his real data actually says</h2></div>
+
+      <p class="lead">
+        None of this was assumed. It was read out of the file he sent, and every figure below
+        is checked by an automated test that fails if it ever stops being true.
+      </p>
+
+      <div class="kv">
+        <div><dt>Articles</dt><dd class="tnum">171</dd><div class="sub">all codes distinct, all text</div></div>
+        <div><dt>Items sold</dt><dd class="tnum">15,983</dd><div class="sub">over 27 days</div></div>
+        <div><dt>Net sales</dt><dd class="tnum">8,928,373.06</dd><div class="sub">matches his footer exactly</div></div>
+        <div><dt>Grand total</dt><dd class="tnum">10,774,488.95</dd><div class="sub">after charge and VAT</div></div>
+      </div>
+
+      <h3>It reconciles to the last decimal</h3>
+      <p>
+        Add up all 171 article rows and you get <strong class="tnum">8,928,373.056</strong>.
+        The Sub Total printed at the bottom of his report says
+        <strong class="tnum">8,928,373.056</strong>. Not close — identical. Every category
+        subtotal ties too, and so does the 15,983 quantity.
+      </p>
+      <div class="note aside">
+        <span class="tag">Why the third decimal matters</span>
+        <p>
+          His amounts carry three decimal places. Stored at the usual two, the sum would no
+          longer reproduce his footer and the system would refuse every real file he has. So
+          POS amounts are held at four decimal places — still exact, still never a float.
+          Figures the system calculates itself stay at two.
+        </p>
+      </div>
+
+      <h3>The service charge is not 10%</h3>
+      <p>
+        His written spec says service charge is 10% and VAT is 15% of the total after it. The
+        worked example: an item at 100 birr carries 10 service charge, then VAT of
+        <span class="tnum">16.50</span> on the 110, for <span class="tnum">126.50</span>.
+        The system reproduces that exactly.
+      </p>
+      <p>
+        But across the whole real file the add-on charge came to
+        <strong class="tnum">4.9365%</strong> of net sales, not 10%. That means only about
+        half of sales carry it — takeaway is the likely reason. <strong>So the system never
+        applies a flat rate per line.</strong> It uses the figure printed in his file and
+        flags the question for him.
+      </p>
+
+      <h3>Things that can never be costed</h3>
+      <p>
+        Six articles name a <em>category</em> rather than a product. No recipe can ever exist
+        for "SOFT DRINK" because nobody knows which drink it was.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Article</th><th class="num">Units</th><th class="num">Revenue</th><th>Why</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">P-00052</td><td>SOFT DRINK</td><td class="num">1,803</td><td class="num">223,986.69</td><td>names a class</td></tr>
+            <tr><td class="mono">P-00046</td><td>BEER</td><td class="num">379</td><td class="num">87,882.52</td><td>names a class</td></tr>
+            <tr><td class="mono">00081</td><td>SEASONAL FRESH JUICE</td><td class="num">44</td><td class="num">16,500.00</td><td>names a class</td></tr>
+            <tr><td class="mono">P-00129</td><td>TEST DRINK</td><td class="num">34</td><td class="num">3.40</td><td>test button, live</td></tr>
+            <tr><td class="mono">P-00000</td><td>TEST FOOD</td><td class="num">9</td><td class="num">1.80</td><td>test button, live</td></tr>
+            <tr><td class="mono">P-00172</td><td>TEST</td><td class="num">6</td><td class="num">0.06</td><td>test button, live</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Together that is <strong class="tnum">328,374.47 birr</strong> — 3.68% of sales — that
+        no amount of recipe writing will ever reach. Splitting those buttons in the POS is the
+        only fix, and that is his decision to make.
+      </p>
+
+      <h3>Free drinks are real stock</h3>
+      <p>
+        Four articles — FREE WATER, FREE AMBO, FREE SOFT DRINK, FREE NOVIDA — total 80 units
+        for <span class="tnum">7.73 birr</span>. That is not revenue. But the water physically
+        left the building.
+      </p>
+      <p>
+        So they do two different things at once: <strong>they deplete stock</strong> and
+        <strong>they are excluded from sales</strong>. Getting that backwards in either
+        direction is a real bug, and there are tests on both halves.
+      </p>
+
+      <h3>A rounding difference worth reporting, not blocking</h3>
+      <p>
+        His Total Tax is <span class="tnum">1,405,368.786</span>. A flat 15% of net plus
+        charge gives <span class="tnum">1,405,368.024</span>. A difference of
+        <strong class="tnum">0.762 birr</strong> across 15,983 items — per-bill rounding inside
+        the till. The system reports it and never blocks on it.
+      </p>
+
+      <h3>The file is a month, not a day</h3>
+      <p>
+        Depletion wants one business day. The file he actually sent covers
+        <strong>8 July to 3 August 2026</strong> — 27 days. So the system records a period
+        with a start and an end, and a single day is just the case where they are the same.
+        It works with what he has rather than demanding what he doesn't.
+      </p>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p6">
+      <div class="part"><span class="part-no">06</span><h2>The screens, one by one</h2></div>
+
+      <p class="lead">
+        Seven screens. Here is what each one is for, what you do on it, and what to look at.
+      </p>
+
+      <h3>Overview <span class="pill neu">/</span></h3>
+      <p>
+        The front page. How many articles exist, how many are mapped to a recipe, how many
+        stock movements have been recorded, and what every recipe costs today. Start here to
+        get your bearings; you don't do any work on it.
+      </p>
+
+      <h3>Sales import <span class="pill neu">/import</span></h3>
+      <p>
+        Where the day's takings come in. Drag the CNET spreadsheet onto the box and press
+        <strong>Upload and validate</strong>.
+      </p>
+      <p>
+        <strong>Nothing posts on upload.</strong> The file is read, checked against its own
+        totals, and handed to you for review. Below the box is every import ever uploaded,
+        with whether it reconciled and how much of it could be costed.
+      </p>
+
+      <h3>Validation panel <span class="pill neu">/import/&lt;id&gt;</span></h3>
+      <p>
+        The most important screen in the system, and the one to spend time on in a demo. Top
+        to bottom:
+      </p>
+      <ul>
+        <li><strong>Reconciliation</strong> — sum of lines, the footer total, and the difference. It should read <span class="tnum">0.00</span>.</li>
+        <li><strong>Cost coverage</strong> — the percentage bar. Currently <span class="tnum">43.01%</span>.</li>
+        <li><strong>Blocking problems</strong> — only appears when something structural is wrong. Posting is off while it is there.</li>
+        <li><strong>Post to stock</strong> — the button. Grey and unclickable unless everything above is satisfied.</li>
+        <li><strong>Will move stock / Stock moved</strong> — the 10 lines that have recipes.</li>
+        <li><strong>Biggest gaps</strong> — the articles where writing one recipe would buy the most coverage. This is the to-do list.</li>
+        <li><strong>Warnings</strong> — generic articles, test articles, free articles, unmapped articles. Grouped, counted, totalled. None of them stop the posting.</li>
+        <li><strong>Notes on this file</strong> — the service charge observation, the tax rounding, the fact that voids are excluded from this report.</li>
+        <li><strong>Approval routing</strong> — his three-level chain, drawn but greyed out. Shown so he can see it is understood, not pretended to work.</li>
+      </ul>
+
+      <h3>Stock ledger <span class="pill neu">/ledger</span></h3>
+      <p>
+        Pick a store, pick an item, see every movement that ever touched it and the running
+        balance after each one.
+      </p>
+      <p>
+        Try Outlet Kitchen → Beef, lean minced. You will see 450 kg issued in, then 348 kg
+        depleted by the sale, leaving 102. Every row shows the unit cost it moved at.
+      </p>
+
+      <h3>Recipes &amp; costs <span class="pill neu">/recipes</span></h3>
+      <p>
+        Two jobs. It shows every recipe's cost <em>on two dates side by side</em>, and it lets
+        you record a new ingredient cost from a chosen date.
+      </p>
+      <p>
+        Change butter, and the earlier column does not move. That is the whole argument of the
+        system in one table. Underneath, cost history shows every version ever recorded with
+        the window it applied to.
+      </p>
+
+      <h3>Physical count <span class="pill neu">/counts</span></h3>
+      <p>
+        Choose a store and a date, press <strong>Start count</strong>, and the system builds a
+        sheet listing every item that store holds, with the theoretical quantity already filled in.
+      </p>
+      <p>
+        Walk the shelves, type what is actually there, and add a reason where it differs. The
+        status column grades itself as you type. <strong>Save entries</strong>, then
+        <strong>Post count</strong>.
+      </p>
+      <div class="note aside">
+        <span class="tag">Why the sheet is frozen</span>
+        <p>
+          The theoretical figure is snapshotted the moment the sheet is created. If it were
+          recalculated at posting time, later deliveries would move the target and the
+          variance would stop meaning anything. Once posted, the sheet cannot be edited at all
+          — it is the only record of what was on the shelf that morning.
+        </p>
+      </div>
+
+      <h3>Variance <span class="pill neu">/variance</span></h3>
+      <p>
+        Books against count, per item, <strong>sorted worst first by money</strong> — because
+        that is what a controller actually looks at. Quantity difference, percentage, birr
+        value, status, and the reason someone typed.
+      </p>
+      <p>
+        The summary strip splits shrinkage from overage, because they are different problems.
+      </p>
+
+      <h3>Dashboard <span class="pill neu">/dashboard</span></h3>
+      <p>
+        Food cost and beverage cost, <strong>side by side and never merged</strong>. Each card
+        shows the percentage, the revenue, and — importantly — the coverage it is dividing by.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th></th><th class="num">Revenue</th><th class="num">Costed</th><th class="num">Coverage</th><th class="num">Cost %</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Food</strong></td><td class="num">7,041,424.68</td><td class="num">3,132,093.50</td><td class="num">44.48%</td><td class="num">27.50%</td></tr>
+            <tr><td><strong>Beverage</strong></td><td class="num">1,819,169.49</td><td class="num">707,788.48</td><td class="num">38.91%</td><td class="num">22.12%</td></tr>
+            <tr><td>Other</td><td class="num">67,771.16</td><td class="num">0.00</td><td class="num">0.00%</td><td class="num">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Then top sellers by quantity and by revenue, and the coverage curve — how many recipes
+        it takes to reach a given share of the money.
+      </p>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p7">
+      <div class="part"><span class="part-no">07</span><h2>The demo, click by click</h2></div>
+
+      <div class="note danger">
+        <span class="tag">Before you start</span>
+        <p>
+          Stop the server, run <code>npm run db:reset</code>, start it again. Do
+          <strong>not</strong> run <code>npm run demo:import</code> — that posts the file
+          ahead of time, and then step 1 hits "period already posted" and the demo dies.
+        </p>
+      </div>
+
+      <ol class="steps">
+        <li><div><strong>Sales import.</strong> Drag <code>reference/cnet_sales_export.xlsx</code> in. Press Upload and validate.
+          <span class="say">"This is your own export, untouched."</span></div></li>
+        <li><div><strong>Point at Reconciliation.</strong>
+          <span class="say">"8,928,373.06 — the sum of the lines, and the total printed at the bottom of your report. Exact. If it didn't match, the button below stays off."</span></div></li>
+        <li><div><strong>Scroll to Cost coverage.</strong>
+          <span class="say">"43% of your revenue can be costed today, with eight recipes. Five million birr can't. That number goes up as recipes get written — and this is the honest way to show it."</span></div></li>
+        <li><div><strong>Scroll to Biggest gaps.</strong>
+          <span class="say">"SOFT DRINK: 1,803 units. That isn't a product, it's a category. No recipe can ever exist for it. Same for BEER."</span></div></li>
+        <li><div><strong>Press Post to stock.</strong>
+          <span class="say">"Nothing was typed. Stock just moved."</span></div></li>
+        <li><div><strong>Press Post again.</strong>
+          <span class="say">"Posting twice is safe. Nothing doubles."</span></div></li>
+        <li><div><strong>Stock ledger</strong> → Outlet Kitchen → Beef, lean minced.
+          <span class="say">"450 kilos issued in, 348 gone. Nobody sold beef — they sold kitfo. The recipe did that."</span></div></li>
+        <li><div><strong>Physical count</strong> → Outlet Kitchen, date 2026-08-04 → Start count.
+          <span class="say">"The sheet freezes what the books say right now."</span></div></li>
+        <li><div><strong>Type the counts.</strong> Beef <code>97</code>, reason "Five kilos unaccounted for". Teff flour <code>1160</code>. Save entries.
+          <span class="say">"It grades itself as you type."</span></div></li>
+        <li><div><strong>Post count.</strong>
+          <span class="say">"The difference becomes an adjustment. The original entry is never edited."</span></div></li>
+        <li><div><strong>Variance.</strong>
+          <span class="say">"Sorted by money, worst first. That's what you'd actually look at."</span></div></li>
+        <li><div><strong>Dashboard.</strong>
+          <span class="say">"Food 27.5%, beverage 22.1% — never merged. Each one tells you the coverage it's dividing by, so you always know what the number covers."</span></div></li>
+        <li><div><strong>Coverage curve, bottom of the dashboard.</strong>
+          <span class="say">"One recipe gets you a quarter of your revenue. Five gets you half. Twenty-three gets you eighty percent. It's a finite job."</span></div></li>
+        <li><div><strong>Recipes &amp; costs.</strong> Note Yeajet Kitfo at <span class="tnum">407.18</span> on 15 July.</div></li>
+        <li><div><strong>Change butter</strong> to <code>1150</code>, effective <code>2026-08-01</code>. Record new cost.
+          <span class="say">"Butter went up."</span></div></li>
+        <li><div><strong>Look at the two columns.</strong>
+          <span class="say">"15 July still says 407.18. 15 August says 415.51. Your July report did not move. That is the thing the spreadsheet cannot do."</span></div></li>
+        <li><div><strong>Cost history</strong> → Butter.
+          <span class="say">"Both versions kept. The old one closed, not overwritten."</span></div></li>
+      </ol>
+
+      <div class="note caution">
+        <span class="tag">Order matters</span>
+        <p>
+          Steps 8–11 need step 5 first — no posted sales means no depletion, so a count finds
+          nothing. The dashboard also reads the latest <em>posted</em> import. And step 15's
+          date must be after 1 July 2026, because that is when the seeded costs begin; the
+          form refuses an earlier date rather than rewriting history.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p8">
+      <div class="part"><span class="part-no">08</span><h2>What is real and what we made up</h2></div>
+
+      <p class="lead">
+        This distinction matters more than anything else in the demo. Say it out loud before
+        he asks.
+      </p>
+
+      <h4>Real — straight out of his own systems</h4>
+      <ul>
+        <li>All 171 article codes, names, categories and sub-categories</li>
+        <li>Every quantity and every price in the sales file</li>
+        <li>The branch, the dates, the footer totals, the tax and service charge figures</li>
+        <li>The 3% / 8% variance thresholds, from his workbook</li>
+        <li>The approval chain, from his written specification</li>
+      </ul>
+
+      <h4>Ours — a guess, clearly labelled</h4>
+      <ul>
+        <li>Every recipe and every ingredient quantity</li>
+        <li>Every ingredient cost</li>
+        <li>Opening stock levels and par levels</li>
+        <li>Which store each POS category depletes from</li>
+      </ul>
+
+      <div class="note sample">
+        <span class="tag">Why we guessed loudly</span>
+        <p>
+          Every sample recipe is flagged in the database and a violet banner sits on the
+          screens saying so. We would far rather he corrects us than assumes we invented his
+          numbers and quietly stops trusting the whole thing.
+        </p>
+      </div>
+
+      <h3>The eight recipes, and what they cost</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Dish</th><th class="num">Cost</th><th class="num">Sells for</th><th class="num">Cost %</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Yeajet Kitfo</td><td class="num">407.18</td><td class="num">1,655.50</td><td class="num">24.6%</td></tr>
+            <tr><td>Fillet Tibes</td><td class="num">450.91</td><td class="num">1,324.22</td><td class="num">34.1%</td></tr>
+            <tr><td>Traditional Coffee</td><td class="num">17.58</td><td class="num">107.66</td><td class="num">16.3%</td></tr>
+            <tr><td>Macchiato</td><td class="num">19.72</td><td class="num">165.63</td><td class="num">11.9%</td></tr>
+            <tr><td>Tea</td><td class="num">3.48</td><td class="num">78.68</td><td class="num">4.4%</td></tr>
+            <tr><td>Ambo Water</td><td class="num">45.00</td><td class="num">124.24</td><td class="num">36.2%</td></tr>
+            <tr><td>Small Water</td><td class="num">25.00</td><td class="num">99.38</td><td class="num">25.2%</td></tr>
+            <tr><td>Mojito</td><td class="num">167.80</td><td class="num">1,490.68</td><td class="num">11.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Plus four sub-recipes: Niter Kibbeh (<span class="tnum">1,032.96</span> a kg), Injera
+        (<span class="tnum">32.53</span> a piece), Kitfo Base
+        (<span class="tnum">310.53</span> a portion) and Mojito Syrup
+        (<span class="tnum">6.20</span> a serving).
+      </p>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p9">
+      <div class="part"><span class="part-no">09</span><h2>Deliberately not built</h2></div>
+
+      <p class="lead">
+        This is a demo whose job is to prove the numbers are right, not to be the finished
+        product. What is missing is missing on purpose.
+      </p>
+
+      <ul>
+        <li><strong>Purchasing and receiving.</strong> Stock arrives via seeded opening balances instead.</li>
+        <li><strong>Approvals.</strong> Drawn on the validation screen, greyed out, clearly inert.</li>
+        <li><strong>Wastage, voids, complimentary and staff meals.</strong> The ledger already has movement types for all four; there are no screens.</li>
+        <li><strong>Inter-outlet transfers.</strong> Same — modelled, not built.</li>
+        <li><strong>Logging in.</strong> One hardcoded user.</li>
+        <li><strong>Anything financial.</strong> No payables, receivables, general ledger or statements. Explicitly out of scope.</li>
+        <li><strong>Live POS or Peachtree integration.</strong> Files are uploaded by hand.</li>
+        <li><strong>A screen for theoretical consumption.</strong> The engine computes it; there is no page yet.</li>
+      </ul>
+
+      <div class="note caution">
+        <span class="tag">One thing to verify before real use</span>
+        <p>
+          Two people posting the same import at the same instant is guarded against, but that
+          guard has never actually been exercised — the test database only allows one
+          connection at a time. The design is right; it needs proving against a real
+          PostgreSQL server before go-live. This is written down in the project brief so it
+          cannot be forgotten.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p10">
+      <div class="part"><span class="part-no">10</span><h2>Questions only he can answer</h2></div>
+
+      <p class="lead">
+        These are modelled as settings rather than guessed in code, so his answer is a change
+        of data, not a rebuild. Every assumed row is marked as assumed.
+      </p>
+
+      <ol>
+        <li><strong>Which sales carry the service charge?</strong> It came to 4.9365% of net, so roughly half. Takeaway is the likely reason, but nobody has confirmed it.</li>
+        <li><strong>Which store does each POS category deplete from?</strong> His export carries no outlet dimension at all — nothing on a sales row says whether it came from the bar or the kitchen. Category is the only proxy available. Our least confident guess is CAFE MENU → Bar; traditional coffee may well be its own station.</li>
+        <li><strong>Are the kitchen and bar really separate stores?</strong> His written spec says yes with transfers between them; his workbook merges them. We followed the spec.</li>
+        <li><strong>How many approval levels, and on which documents?</strong></li>
+        <li><strong>Do ingredients need yield and trim factors?</strong> A kilo of onions is not a kilo of usable onion. Not modelled yet.</li>
+        <li><strong>Will he split SOFT DRINK and BEER into real products?</strong> Until he does, 3.68% of revenue can never be costed.</li>
+      </ol>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p11">
+      <div class="part"><span class="part-no">11</span><h2>Running it</h2></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">npm run db:reset</td><td>Wipe, rebuild and re-seed the database. Repeatable from clean, every time.</td></tr>
+            <tr><td class="mono">npm run dev</td><td>Start the app on <code>localhost:3000</code></td></tr>
+            <tr><td class="mono">npm test</td><td>Run all 125 tests</td></tr>
+            <tr><td class="mono">npm run demo:import</td><td>Import and post the reference file without clicking. <strong>Not before a demo.</strong></td></tr>
+            <tr><td class="mono">npm run demo:drive</td><td>Drive the entire demo path over HTTP and check 48 things</td></tr>
+            <tr><td class="mono">npm run coverage:curve</td><td>Print the recipe coverage table</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note danger">
+        <span class="tag">The one that will bite you</span>
+        <p>
+          <strong>Stop the server before <code>db:reset</code>.</strong> The database holds
+          its data directory exclusively. Two processes writing to it at once will corrupt it.
+        </p>
+      </div>
+
+      <p>
+        There is no database to install. With no <code>DATABASE_URL</code> set, the app runs
+        on PGlite — real PostgreSQL compiled to run inside the application itself, saving to a
+        <code>.pgdata</code> folder. Point <code>DATABASE_URL</code> at a real server and the
+        identical code runs against it, because the SQL uses no extensions and nothing
+        cloud-specific. That matters because nobody has yet decided whether this lives in the
+        cloud or on a machine at the property.
+      </p>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p12">
+      <div class="part"><span class="part-no">12</span><h2>Under the hood, briefly</h2></div>
+
+      <p>
+        Next.js and TypeScript on the front, PostgreSQL underneath, Tailwind for styling,
+        SheetJS to read the spreadsheets. Seven database migrations build the schema; nothing
+        needs a database extension.
+      </p>
+
+      <h3>The two functions everything depends on</h3>
+      <p>
+        <strong><code>costRecipe(recipe, date)</code></strong> walks the tree down to raw
+        ingredients, prices each at the cost version in force on that date, and returns the
+        cost per portion with a full breakdown. If any ingredient has no price on that date it
+        returns <em>nothing at all</em> rather than a smaller number — a partial cost looks
+        like an answer and isn't one.
+      </p>
+      <p>
+        <strong><code>postSalesImport(import)</code></strong> records the day's revenue and
+        depletes stock for every line that has a recipe, in a single transaction that either
+        completes entirely or does nothing.
+      </p>
+
+      <div class="note aside">
+        <span class="tag">A deliberate redundancy</span>
+        <p>
+          The recipe costing is written <strong>twice</strong> — once in TypeScript, once in
+          SQL. A test asserts the two agree to the birr on every recipe. Two independent
+          implementations that must match is a cheap and unusually effective check that the
+          arithmetic is right.
+        </p>
+      </div>
+
+      <h3>What the tests actually prove</h3>
+      <ul>
+        <li>His real file reconciles to the last decimal, and a one-thousandth of a birr change breaks it</li>
+        <li>Article codes survive as text, leading zeros intact</li>
+        <li>Posting the same file twice writes nothing the second time</li>
+        <li>Changing a cost leaves earlier reports byte-for-byte identical</li>
+        <li>The ledger physically refuses edits and deletions</li>
+        <li>Recipe cycles are caught rather than looped forever</li>
+        <li>Free articles move stock and earn no revenue</li>
+        <li>The code rounds exactly the way PostgreSQL rounds</li>
+        <li>A count adjustment changes quantity without disturbing the average cost</li>
+      </ul>
+    </section>
+
+    <!-- ================================================================== -->
+    <section id="p13">
+      <div class="part"><span class="part-no">13</span><h2>The four moments that matter on Tuesday</h2></div>
+
+      <p class="lead">
+        If the meeting gets cut short, these are the four things worth showing. Everything
+        else is supporting material.
+      </p>
+
+      <div class="note rule">
+        <span class="tag">Moment one — I read your actual file</span>
+        <p>
+          8,928,373.06 matches his footer exactly. Not a demo file, not a sample. His file,
+          and the system refuses to post anything that doesn't tie.
+        </p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Moment two — stock moved by itself</span>
+        <p>
+          348 kilos of beef left the kitchen and nobody typed a number. He sold kitfo; the
+          recipe worked out the beef.
+        </p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Moment three — history does not move</span>
+        <p>
+          Butter goes from 900 to 1,150. August says 415.51. July still says 407.18. This is
+          the thing his spreadsheet cannot do, and the reason he is buying software.
+        </p>
+      </div>
+
+      <div class="note rule">
+        <span class="tag">Moment four — the honest number</span>
+        <p>
+          43% coverage. Not 100%, not hidden. And then the curve that turns "write 171
+          recipes" into "write five and you're at half, twenty-three and you're at eighty
+          percent." A finite job with a visible finish line.
+        </p>
+      </div>
+
+      <h3>And one thing worth telling him gently</h3>
+      <p>
+        His current spreadsheet under-costs every dish that uses a sub-recipe, because those
+        lines are priced at zero. His Classic Beef Burger is costed at 106.15 and leaves out
+        its own bun. He has been running his margins off numbers that are too low. This
+        system rolls sub-recipes up properly — which means its numbers will be
+        <em>higher</em> than his, and that difference is a feature to explain, not a
+        discrepancy to apologise for.
+      </p>
+    </section>
+
+    <div class="footer">
+      <p>
+        Prime F&amp;B Cost Control — demo build. Recipes and ingredient costs throughout are
+        estimates awaiting confirmation. Article data, sales figures and totals are real,
+        taken from the CNET export for Siyonat Branch, 8 July – 3 August 2026.
+      </p>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

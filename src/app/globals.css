@@ -1,0 +1,162 @@
+@import 'tailwindcss';
+@custom-variant dark (&:is(.dark *));
+
+
+/*
+  Prime F&B Cost Control — visual language.
+
+  This is a back-office control tool that an accountant reads for hours. It is
+  built for density and legibility rather than decoration: tabular numerals
+  everywhere a figure appears, generous row height, and colour used only to
+  mean something (blocked, warning, settled).
+*/
+
+@theme {
+  /* Classic Oracle / Enterprise System Palette */
+  
+  /* Background and panel colors (light warm grays) */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-gray-50: #f5f5f5;
+  --color-gray-100: #ebebeb;
+  --color-gray-200: #e0e0e0;
+  --color-gray-300: #d6d6d6;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #7a7a7a;
+  --color-gray-600: #5c5c5c;
+  --color-gray-700: #474747;
+  --color-gray-800: #2e2e2e;
+  --color-gray-900: #141414;
+  --color-gray-950: #0a0a0a;
+
+  /* Oracle Classic Blue/Teal Accents */
+  --color-green-50: #e8f4f8;
+  --color-green-100: #d1e9f1;
+  --color-green-500: #007399; /* Classic Oracle Teal/Blue */
+  --color-green-600: #005c7a;
+  --color-green-700: #00455c;
+  --color-green-800: #002e3d;
+
+  --color-blue-50: #e6f0fa;
+  --color-blue-600: #0055a4;
+  --color-blue-800: #003366;
+
+  /* Classic system reds */
+  --color-red-50: #fde8e8;
+  --color-red-200: #f9c7c7;
+  --color-red-600: #cc0000;
+  --color-red-700: #990000;
+
+  /* Classic system amber/yellows */
+  --color-amber-100: #fff9c4;
+  --color-amber-800: #d48806;
+
+  /* Backwards compat for ink/brand */
+  --color-ink-50: #f2f2f2;
+  --color-ink-100: #e6e6e6;
+  --color-ink-200: #cccccc;
+  --color-ink-300: #b3b3b3;
+  --color-ink-400: #999999;
+  --color-ink-500: #808080;
+  --color-ink-600: #666666;
+  --color-ink-700: #4d4d4d;
+  --color-ink-800: #333333;
+  --color-ink-900: #1a1a1a;
+  --color-ink-950: #0d0d0d;
+  
+  --color-brand-50: var(--color-green-50);
+  --color-brand-100: var(--color-green-100);
+  --color-brand-500: var(--color-green-500);
+  --color-brand-600: var(--color-green-600);
+  --color-brand-700: var(--color-green-700);
+
+  /* Classic Enterprise Fonts */
+  --font-sans: Tahoma, Arial, 'Segoe UI', sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+
+  /* REMOVE ALL ROUNDED CORNERS for that authentic 90s/2000s enterprise look */
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 0px;
+  
+  /* Utilitarian borders */
+  --shadow-sm: 1px 1px 0px rgba(0,0,0,0.2);
+  --shadow: 2px 2px 0px rgba(0,0,0,0.2);
+  --shadow-md: 3px 3px 0px rgba(0,0,0,0.2);
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-gray-100);
+  color: var(--color-gray-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+html.dark body {
+  background: #111111;
+  color: #ededed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every figure lines up in its column. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* Sticky table headers for the long tables — 171 rows is normal here. */
+.sticky-head thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Classic system header styles */
+h1, h2, h3, h4, th {
+  text-shadow: none;
+}
+
+/* Make inputs look a bit more sunken/classic */
+input, select, textarea {
+  border: 1px solid var(--color-gray-400);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+  background-color: var(--color-white);
+}
+
+/* Revert button shadows from inputs */
+button {
+  box-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+}
+button:active {
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+  transform: translate(1px, 1px);
+}
+
+
+
+.dark input, .dark select, .dark textarea {
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+  background-color: #1a1a1a;
+  color: #ededed;
+  border-color: #333;
+}
+
+.dark button {
+  box-shadow: 1px 1px 0px rgba(255,255,255,0.1);
+}
+.dark button:active {
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+}

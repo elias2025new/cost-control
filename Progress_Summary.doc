@@ -1,0 +1,39 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><title>Progress Summary</title></head>
+<body>
+<h1>Prime F&B Cost Control - Progress Summary</h1>
+<h2>Project Overview</h2>
+<p>The application is a web-based replacement for a restaurant's F&B cost-control spreadsheet. The project is currently in Phase 1 (The Engine), focusing on core logic, calculations, and data structures rather than the user interface.</p>
+
+<h2>Key Accomplishments & Features Built</h2>
+<h3>1. Core Ledger & Stock Movement</h3>
+<ul>
+<li>Implemented an append-only stock movement system. Stock on hand is calculated dynamically via sum of movements rather than being a static editable field.</li>
+<li>Added robust mechanisms for stock counts, variance checks, and issue requests.</li>
+</ul>
+
+<h3>2. Recipes & Costing Engine</h3>
+<ul>
+<li>Built a hierarchical recipe system supporting sub-recipes (e.g., ingredients used to make a bun, which is then used in a burger).</li>
+<li>Implemented moving weighted average costing per store and per item. Costs and recipes are versioned with effective dates to ensure historical financial accuracy.</li>
+<li>Fixed-point arithmetic is strictly used for all money values to prevent floating-point rounding errors.</li>
+<li>Created dual implementations of costing logic (TypeScript and SQL) and comprehensive tests to ensure they agree exactly.</li>
+</ul>
+
+<h3>3. POS Sales Integration & Reconciliation</h3>
+<ul>
+<li>Implemented parsing and validation for CNET POS sales exports.</li>
+<li>Added strict reconciliation checks: imports must match total amounts before posting.</li>
+<li>Handled complex POS data anomalies, such as tracking non-costable items (like generic 'SOFT DRINK'), test articles, and free/complimentary items that deplete stock without revenue.</li>
+</ul>
+
+<h3>4. Infrastructure & Testing</h3>
+<ul>
+<li>Configured the database using PGlite (PostgreSQL compiled to WASM) for easy local development without an external DB server.</li>
+<li>Developed 98+ automated tests validating the logic against real client export files.</li>
+</ul>
+
+<h2>Next Steps</h2>
+<p>Moving forward, the focus will shift to finalizing any pending client clarifications (such as service charge distribution and store configurations) and developing the interactive user interface screens (Overview, Imports, and Ledger).</p>
+</body>
+</html>
