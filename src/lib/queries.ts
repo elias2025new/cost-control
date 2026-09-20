@@ -230,12 +230,19 @@ export async function getTopUncosted(id: string, limit = 12) {
     article_flag: string;
   }>(
     `select sl.article_code, sl.article_name, sl.pos_category, sl.qty, sl.total_amount,
-            sl.uncosted_reason, coalesce(p.article_flag, 'normal') as article_flag
+            coalesce(sl.uncosted_reason, sii.kind) as uncosted_reason,
+            coalesce(p.article_flag, 'normal') as article_flag
        from sales_lines sl
+       join sales_imports si on si.id = sl.sales_import_id
        left join pos_item_map p on p.id = sl.pos_item_map_id
+       left join sales_import_issues sii 
+         on sii.sales_import_id = sl.sales_import_id 
+        and sii.article_code = sl.article_code
+        and sii.severity = 'warn'
       where sl.sales_import_id = $1
         and sl.depleted = false
         and coalesce(p.counts_as_sale, true) = true
+        and (si.status = 'posted' or sii.kind is not null)
       order by sl.total_amount desc
       limit $2`,
     [id, limit],
