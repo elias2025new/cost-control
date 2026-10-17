@@ -10,13 +10,15 @@ import {
 import { currentTenant, currentUser } from '../../../lib/queries';
 import { getIssueRequest, getIssueRequestLines } from '../../../lib/masterData';
 import { longDate } from '../../../lib/format';
-import { FulfillForm, CancelForm } from './FulfillForm';
+import { FulfillForm, CancelForm, ApproveForm } from './FulfillForm';
+import { approveRequestAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
-const STATUS: Record<string, { tone: 'good' | 'warn' | 'neutral'; label: string }> = {
-  requested: { tone: 'warn', label: 'Waiting to be released' },
-  fulfilled: { tone: 'good', label: 'Released' },
+const STATUS: Record<string, { tone: 'good' | 'warn' | 'neutral' | 'info'; label: string }> = {
+  requested: { tone: 'warn', label: 'Pending Dept Head Approval' },
+  approved: { tone: 'info', label: 'Approved — Ready for Store Release' },
+  fulfilled: { tone: 'good', label: 'Released / Fulfilled' },
   cancelled: { tone: 'neutral', label: 'Cancelled' },
 };
 
@@ -46,11 +48,15 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
   if (!isParty) redirect('/requests');
 
   const st = STATUS[request.status] ?? STATUS.requested;
-  const isWaiting = request.status === 'requested';
+  const canApprove =
+    request.status === 'requested' &&
+    (me.role === 'admin' || me.storeId === request.requesting_store_id);
   const canRelease =
-    isWaiting && (me.role === 'admin' || me.storeId === request.fulfilling_store_id);
+    (request.status === 'approved' || (request.status === 'requested' && me.role === 'admin')) &&
+    (me.role === 'admin' || me.storeId === request.fulfilling_store_id);
   const canCancel =
-    isWaiting && (me.role === 'admin' || me.storeId === request.requesting_store_id);
+    (request.status === 'requested' || request.status === 'approved') &&
+    (me.role === 'admin' || me.storeId === request.requesting_store_id);
 
   return (
     <>
@@ -79,8 +85,20 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
 
       <div className="p-8 space-y-6 max-w-5xl">
         {request.note && (
-          <div className="rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-4 py-3 text-[13px] text-ink-700">
+          <div className="rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-4 py-3 text-[13px] text-ink-700 dark:text-zinc-300">
             {request.note}
+          </div>
+        )}
+
+        {canApprove && (
+          <Card title="Pre-Approval">
+            <ApproveForm requestId={request.id} onApprove={approveRequestAction} />
+          </Card>
+        )}
+
+        {request.status === 'requested' && !canApprove && (
+          <div className="rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-4 text-[13px] text-amber-800 dark:text-amber-200">
+            Waiting for the requesting store&rsquo;s Department Head (Chef or Bar Manager) to pre-approve before warehouse fulfillment.
           </div>
         )}
 
@@ -103,18 +121,22 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
 
         <Card
           title="Approval routing"
-          hint="From your written specification - shown, not built"
-          right={<Badge tone="neutral">Not in this demo</Badge>}
+          hint="Materials Control (MC) authorization lifecycle"
+          right={<Badge tone={request.status === 'fulfilled' ? 'good' : request.status === 'approved' ? 'info' : 'warn'}>{st.label}</Badge>}
         >
           <ApprovalChain
             steps={[
-              'Outlet requests',
-              'Restaurant Manager approves',
-              'F&B Controller reviews',
-              'Storekeeper releases',
-              'Outlet receives',
+              '1. Outlet requests (via Par or manual)',
+              '2. Chef / Bar Manager pre-approves',
+              '3. Storekeeper fulfills from warehouse',
             ]}
-            caption="Your specification asks for three authorisation levels, and for the requester to separately approve and receive the transfer. How many levels are really wanted is still an open question, so this build keeps the two ends that are certain - a request is made, and the storekeeper releases the stock - and shows the rest here, inactive."
+            caption={
+              request.status === 'fulfilled'
+                ? 'Request has been fully approved and released to the outlet store.'
+                : request.status === 'approved'
+                  ? 'Request pre-approved by Department Head. Awaiting Storekeeper release.'
+                  : 'Awaiting Department Head pre-approval before stock can be released.'
+            }
           />
         </Card>
       </div>

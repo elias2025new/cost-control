@@ -37,6 +37,10 @@ export interface SessionPayload {
   storeId: string | null;
   displayName: string;
   permissions: string[];
+  departmentGroup?: string;
+  allStoresAccess?: boolean;
+  assignedStoreIds?: string[];
+  documentVisibility?: 'all' | 'department' | 'own';
   exp: number; // unix seconds
 }
 

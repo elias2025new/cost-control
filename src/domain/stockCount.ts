@@ -47,6 +47,7 @@ export async function createStockCount(
   storeId: string,
   countDate: string,
   countedBy?: string,
+  isBlind: boolean = true,
 ): Promise<CreateCountResult> {
   return db.transaction(async (tx) => {
     const { rows: existing } = await tx.query<{ id: string; status: string }>(
@@ -63,9 +64,9 @@ export async function createStockCount(
     }
 
     const { rows: created } = await tx.query<{ id: string }>(
-      `insert into stock_counts (tenant_id, store_id, count_date, status, counted_by)
-       values ($1, $2, $3::date, 'draft', $4) returning id`,
-      [tenantId, storeId, countDate, countedBy ?? null],
+      `insert into stock_counts (tenant_id, store_id, count_date, status, counted_by, is_blind)
+       values ($1, $2, $3::date, 'draft', $4, $5) returning id`,
+      [tenantId, storeId, countDate, countedBy ?? null, isBlind],
     );
     const countId = created[0].id;
 
@@ -98,11 +99,11 @@ export async function createStockCount(
   });
 }
 
-/** Save entered quantities and reasons. Only while the count is a draft. */
+/** Save entered quantities and reasons. Only while the count is draft or recount_required. */
 export async function saveCountedQuantities(
   db: Database,
   countId: string,
-  entries: { lineId: string; countedQty: string | null; note: string | null }[],
+  entries: { lineId: string; countedQty: string | null; note?: string | null; discrepancyReason?: string | null }[],
 ): Promise<{ saved: number }> {
   return db.transaction(async (tx) => {
     const status = await countStatus(tx, countId);
@@ -116,20 +117,151 @@ export async function saveCountedQuantities(
 
     let saved = 0;
     for (const e of entries) {
+      const q = e.countedQty === null || e.countedQty === '' ? null : qtyParam(e.countedQty);
       await tx.query(
         `update stock_count_lines
-            set counted_qty = $2, note = $3
+            set counted_qty = $2,
+                first_counted_qty = coalesce(first_counted_qty, $2),
+                note = $3,
+                discrepancy_reason = coalesce($5, discrepancy_reason)
           where id = $1 and stock_count_id = $4`,
         [
           e.lineId,
-          e.countedQty === null || e.countedQty === '' ? null : qtyParam(e.countedQty),
+          q,
           e.note && e.note.trim() ? e.note.trim() : null,
           countId,
+          e.discrepancyReason ?? null,
         ],
       );
       saved += 1;
     }
     return { saved };
+  });
+}
+
+export interface BlindCountLine {
+  lineId: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  uom: string;
+}
+
+/**
+ * HMC Blind Count Sheet: Returns items to count WITHOUT disclosing theoretical book stock.
+ * Prevents bias or fabricated counts during physical stocktaking.
+ */
+export async function getBlindCountSheet(
+  db: Database,
+  tenantId: string,
+  countId: string,
+): Promise<BlindCountLine[]> {
+  const { rows } = await db.query<{
+    id: string;
+    item_id: string;
+    code: string;
+    name: string;
+    uom: string;
+  }>(
+    `select l.id, l.item_id, i.code, i.name, i.uom
+       from stock_count_lines l
+       join items i on i.id = l.item_id
+      where l.stock_count_id = $1 and l.tenant_id = $2
+      order by i.code`,
+    [countId, tenantId],
+  );
+
+  return rows.map((r) => ({
+    lineId: r.id,
+    itemId: r.item_id,
+    itemCode: r.code,
+    itemName: r.name,
+    uom: r.uom,
+  }));
+}
+
+/**
+ * Evaluates Count Recount Flags (HMC InventoryBusinessProcessObject.cs)
+ * Flags lines where variance exceeds threshold and updates status to 'recount_required' if needed.
+ */
+export async function submitCountForRecountEvaluation(
+  db: Database,
+  tenantId: string,
+  countId: string,
+  opts?: { valThreshold?: number; pctThreshold?: number },
+): Promise<{ status: string; flaggedLines: number; totalVarianceVal: Decimal }> {
+  const valThreshold = opts?.valThreshold ?? 500.0;
+  const pctThreshold = opts?.pctThreshold ?? 5.0;
+
+  const { rows } = await db.query<{
+    status: string;
+    flagged_lines: number;
+    total_variance_val: string;
+  }>(`select * from evaluate_count_recounts($1, $2, $3)`, [countId, valThreshold, pctThreshold]);
+
+  return {
+    status: rows[0].status,
+    flaggedLines: Number(rows[0].flagged_lines),
+    totalVarianceVal: dec(rows[0].total_variance_val),
+  };
+}
+
+/**
+ * Records Blind Recount Entry with Discrepancy Classification
+ * Updates recount_qty and resolves recount_status to 'recounted' or 'waived'.
+ */
+export async function recordRecount(
+  db: Database,
+  tenantId: string,
+  countId: string,
+  recounts: {
+    lineId: string;
+    recountQty: string;
+    discrepancyReason?: string;
+    waive?: boolean;
+  }[],
+  supervisorUserId?: string,
+): Promise<{ resolvedLines: number; status: string }> {
+  return db.transaction(async (tx) => {
+    let resolved = 0;
+    for (const r of recounts) {
+      const recountStatus = r.waive ? 'waived' : 'recounted';
+      await tx.query(
+        `update stock_count_lines
+            set recount_qty = $2,
+                counted_qty = case when $3 = 'waived' then counted_qty else $2 end,
+                recount_status = $3,
+                discrepancy_reason = coalesce($4, discrepancy_reason)
+          where id = $1 and stock_count_id = $5`,
+        [
+          r.lineId,
+          qtyParam(r.recountQty),
+          recountStatus,
+          r.discrepancyReason ?? null,
+          countId,
+        ],
+      );
+      resolved++;
+    }
+
+    const { rows: remaining } = await tx.query<{ c: string }>(
+      `select count(*)::text as c
+         from stock_count_lines
+        where stock_count_id = $1 and recount_status = 'flagged'`,
+      [countId],
+    );
+
+    const hasFlagged = Number(remaining[0].c) > 0;
+    const newStatus = hasFlagged ? 'recount_required' : 'approved';
+
+    await tx.query(
+      `update stock_counts
+          set status = $2, recount_by = coalesce($3, recount_by)
+        where id = $1`,
+      [countId, newStatus, supervisorUserId ?? 'supervisor'],
+    );
+
+    return { resolvedLines: resolved, status: newStatus };
   });
 }
 
@@ -179,8 +311,8 @@ export async function postStockCount(
       const summary = await postedSummary(tx, countId);
       return { countId, posted: false, alreadyPosted: true, ...summary };
     }
-    if (sc.status === 'reversed') {
-      throw new StockCountError('This count has been reversed.', 'REVERSED', { countId });
+    if (sc.status === 'recount_required') {
+      throw new StockCountError('Count has unresolved discrepancy recounts and cannot be posted.', 'ALREADY_EXISTS');
     }
 
     const { rows: lines } = await tx.query<{
@@ -188,8 +320,9 @@ export async function postStockCount(
       item_id: string;
       theoretical_qty: string;
       counted_qty: string | null;
+      discrepancy_reason: string | null;
     }>(
-      `select id, item_id, theoretical_qty, counted_qty
+      `select id, item_id, theoretical_qty, counted_qty, discrepancy_reason
          from stock_count_lines
         where stock_count_id = $1 and counted_qty is not null
         order by id`,
@@ -230,6 +363,10 @@ export async function postStockCount(
       if (delta.isZero()) continue;
 
       const valueDelta = delta.times(unitCost);
+      const movementNote = line.discrepancy_reason
+        ? `physical count ${sc.count_date} (${line.discrepancy_reason})`
+        : `physical count ${sc.count_date}`;
+
       await tx.query(
         `insert into stock_movements
            (tenant_id, store_id, item_id, movement_type, qty_delta, unit_cost, value_delta,
@@ -246,7 +383,7 @@ export async function postStockCount(
           sc.count_date,
           countId,
           line.id,
-          `physical count ${sc.count_date}`,
+          movementNote,
           postedBy ?? null,
         ],
       );

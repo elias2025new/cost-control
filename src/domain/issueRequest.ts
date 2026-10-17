@@ -35,6 +35,7 @@ export class IssueRequestError extends Error {
       | 'AMBIGUOUS_MAIN_STORE'
       | 'SELF_REQUEST'
       | 'NOT_AUTHORISED'
+      | 'NOT_APPROVED'
       | 'ALREADY_FULFILLED'
       | 'CANCELLED'
       | 'NOTHING_REQUESTED',
@@ -63,8 +64,13 @@ export interface CreateIssueRequestResult {
  * tenant once a second branch exists.
  */
 async function resolveMainStore(tx: Tx, tenantId: string, requestingStoreId: string) {
-  const { rows: requesting } = await tx.query<{ branch_id: string; kind: string; name: string }>(
-    `select branch_id, kind, name from stores where tenant_id = $1 and id = $2`,
+  const { rows: requesting } = await tx.query<{
+    branch_id: string;
+    kind: string;
+    name: string;
+    default_fulfilling_store_id: string | null;
+  }>(
+    `select branch_id, kind, name, default_fulfilling_store_id from stores where tenant_id = $1 and id = $2`,
     [tenantId, requestingStoreId],
   );
   if (!requesting.length) {
@@ -72,12 +78,17 @@ async function resolveMainStore(tx: Tx, tenantId: string, requestingStoreId: str
       requestingStoreId,
     });
   }
-  if (requesting[0].kind === 'main') {
+  if (requesting[0].kind === 'main' && !requesting[0].default_fulfilling_store_id) {
     throw new IssueRequestError(
       'The main store does not request stock from itself - it receives it.',
       'SELF_REQUEST',
       { requestingStoreId },
     );
+  }
+
+  // If a specific fulfilling store / supply route was configured (Materials Control routing):
+  if (requesting[0].default_fulfilling_store_id) {
+    return requesting[0].default_fulfilling_store_id;
   }
 
   const { rows: mains } = await tx.query<{ id: string; name: string }>(
@@ -357,3 +368,99 @@ export async function cancelIssueRequest(
     await tx.query(`update issue_requests set status = 'cancelled' where id = $1`, [requestId]);
   });
 }
+
+export async function approveIssueRequest(
+  db: Database,
+  tenantId: string,
+  requestId: string,
+  actor: { userId: string | null; role: 'admin' | 'store_user'; storeId: string | null },
+): Promise<void> {
+  return db.transaction(async (tx) => {
+    const { rows } = await tx.query<{
+      status: string;
+      requesting_store_id: string;
+    }>(
+      `select status, requesting_store_id from issue_requests
+        where id = $1 and tenant_id = $2 for update`,
+      [requestId, tenantId],
+    );
+    if (!rows.length) {
+      throw new IssueRequestError('That request does not exist.', 'REQUEST_NOT_FOUND', { requestId });
+    }
+    const req = rows[0];
+    if (actor.role !== 'admin' && actor.storeId !== req.requesting_store_id) {
+      throw new IssueRequestError(
+        'Only the Department Head of the requesting store can approve this request.',
+        'NOT_AUTHORISED',
+        { requestId },
+      );
+    }
+    if (req.status === 'fulfilled') {
+      throw new IssueRequestError('This request is already fulfilled.', 'ALREADY_FULFILLED', { requestId });
+    }
+    if (req.status === 'cancelled') {
+      throw new IssueRequestError('This request was cancelled.', 'CANCELLED', { requestId });
+    }
+    if (req.status === 'approved') return;
+
+    await tx.query(
+      `update issue_requests set status = 'approved', approved_at = now(), approved_by_user_id = $2
+        where id = $1`,
+      [requestId, actor.userId],
+    );
+  });
+}
+
+export async function getParRequisitionSuggestions(
+  db: Database,
+  tenantId: string,
+  requestingStoreId: string,
+): Promise<
+  {
+    itemId: string;
+    itemName: string;
+    itemCode: string;
+    uom: string;
+    minQty: string;
+    maxQty: string;
+    currentQty: string;
+    suggestedQty: string;
+  }[]
+> {
+  const { rows } = await db.query<{
+    item_id: string;
+    item_name: string;
+    item_code: string;
+    uom: string;
+    min_qty: string;
+    max_qty: string;
+    current_qty: string;
+    suggested_qty: string;
+  }>(
+    `select l.item_id, i.name as item_name, i.code as item_code, i.uom,
+            l.min_qty::text, l.max_qty::text,
+            coalesce(soh.qty_on_hand, 0)::text as current_qty,
+            greatest(0, l.max_qty - coalesce(soh.qty_on_hand, 0))::text as suggested_qty
+       from store_item_levels l
+       join items i on i.id = l.item_id and i.is_active
+       left join v_stock_on_hand soh
+         on soh.tenant_id = l.tenant_id
+        and soh.store_id  = l.store_id
+        and soh.item_id   = l.item_id
+      where l.tenant_id = $1 and l.store_id = $2
+        and l.max_qty > coalesce(soh.qty_on_hand, 0)
+      order by i.name`,
+    [tenantId, requestingStoreId],
+  );
+  return rows.map((r) => ({
+    itemId: r.item_id,
+    itemName: r.item_name,
+    itemCode: r.item_code,
+    uom: r.uom,
+    minQty: r.min_qty,
+    maxQty: r.max_qty,
+    currentQty: r.current_qty,
+    suggestedQty: r.suggested_qty,
+  }));
+}
+

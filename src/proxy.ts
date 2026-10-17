@@ -37,20 +37,36 @@ export default function proxy(request: NextRequest) {
 
   if (session.role === 'store_user') {
     const p = pathname;
-    const hasPerm = (key: string) => session.permissions?.includes(key) || session.permissions?.includes('all');
+    const hasPerm = (key: string) =>
+      session.permissions?.includes(key) || session.permissions?.includes('all');
+    const isControllerOrMgmt =
+      session.departmentGroup === 'controller' || session.departmentGroup === 'management';
+
+    // Allow controllers and management to view high-level reporting & dashboard
+    if (isControllerOrMgmt && (p === '/' || p.startsWith('/dashboard') || p.startsWith('/reports'))) {
+      return NextResponse.next();
+    }
 
     const blocked =
       p === '/' ||
-      (p.startsWith('/setup') && !(p.startsWith('/setup/recipes') && hasPerm('recipe_build'))) ||
-      p.startsWith('/import') ||
-      p.startsWith('/dashboard') ||
-      (p.startsWith('/recipes') && !hasPerm('recipe_view') && !hasPerm('recipe_build') && !hasPerm('recipe_cost_manage')) ||
+      (p.startsWith('/setup') && !(p.startsWith('/setup/recipes') && (hasPerm('recipe_manage') || hasPerm('recipe_build')))) ||
+      (p.startsWith('/import') && !hasPerm('sales_eod_upload') && !hasPerm('sales_view')) ||
+      (p.startsWith('/sales') && !hasPerm('sales_eod_upload') && !hasPerm('sales_view')) ||
+      (p.startsWith('/dashboard') && !isControllerOrMgmt && !hasPerm('reports_view')) ||
+      (p.startsWith('/reports') && !hasPerm('reports_view') && !hasPerm('variance_view')) ||
+      (p.startsWith('/purchases') && !hasPerm('purchase_receive') && !hasPerm('po_create')) ||
+      (p.startsWith('/transfers') && !hasPerm('transfer_manage')) ||
+      (p.startsWith('/counts') && !hasPerm('count_entry') && !hasPerm('recount_authorize')) ||
+      (p.startsWith('/waste') && !hasPerm('waste_log') && !hasPerm('waste_approve')) ||
+      (p.startsWith('/recipes') && !hasPerm('recipe_view') && !hasPerm('recipe_manage') && !hasPerm('recipe_build') && !hasPerm('recipe_cost_manage')) ||
       (p.startsWith('/variance') && !hasPerm('variance_view')) ||
+      (p.startsWith('/production') && !hasPerm('production_batch') && !hasPerm('butcher_test')) ||
       (p.startsWith('/ledger') && !hasPerm('ledger_view')) ||
-      (p.startsWith('/issues') && !hasPerm('issue_create') && !hasPerm('issue_authorize'));
+      (p.startsWith('/issues') && !hasPerm('issue_request') && !hasPerm('issue_authorize') && !hasPerm('issue_fulfill') && !hasPerm('issue_create')) ||
+      (p.startsWith('/requests') && !hasPerm('issue_request') && !hasPerm('issue_authorize') && !hasPerm('issue_fulfill') && !hasPerm('issue_create'));
 
     if (blocked) {
-      return NextResponse.redirect(new URL('/issues', request.url));
+      return NextResponse.redirect(new URL('/requests', request.url));
     }
   }
 

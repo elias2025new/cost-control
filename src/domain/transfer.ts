@@ -72,6 +72,36 @@ export async function setTransferLines(
   });
 }
 
+export async function dispatchTransfer(
+  db: Database,
+  tenantId: string,
+  transferId: string,
+  actorUserId: string,
+): Promise<void> {
+  return db.transaction(async (tx) => {
+    const { rows: found } = await tx.query<{ status: string }>(
+      `select status from transfers where id = $1 and tenant_id = $2 for update`,
+      [transferId, tenantId],
+    );
+    if (!found.length) throw new TransferError('That transfer does not exist.', 'TRANSFER_NOT_FOUND');
+    if (found[0].status !== 'draft') {
+      throw new TransferError('Only draft transfers can be dispatched.', 'ALREADY_POSTED');
+    }
+    const { rows: lineCount } = await tx.query<{ c: string }>(
+      `select count(*)::text as c from transfer_lines where transfer_id = $1 and tenant_id = $2`,
+      [transferId, tenantId],
+    );
+    if (lineCount[0].c === '0') {
+      throw new TransferError('Cannot dispatch a transfer with no items.', 'NOTHING_TO_POST');
+    }
+    await tx.query(
+      `update transfers set status = 'dispatched', dispatched_by_user_id = $1, dispatched_at = now()
+        where id = $2 and tenant_id = $3`,
+      [actorUserId, transferId, tenantId],
+    );
+  });
+}
+
 export async function postTransfer(
   db: Database,
   tenantId: string,
@@ -153,7 +183,12 @@ export async function postTransfer(
       );
     }
 
-    await tx.query(`update transfers set status = 'posted' where id = $1`, [transferId]);
+    await tx.query(
+      `update transfers
+          set status = 'posted', accepted_by_user_id = $1, accepted_at = now()
+        where id = $2`,
+      [actorUserId, transferId],
+    );
 
     return { linesPosted: lines.length };
   });

@@ -66,11 +66,86 @@ export async function getStore(id: string) {
     name: string;
     kind: string;
     branch_id: string;
+    description: string | null;
+    default_fulfilling_store_id: string | null;
+    fulfilling_store_name: string | null;
   }>(
-    `select id, code, name, kind, branch_id from stores where tenant_id = $1 and id = $2`,
+    `select s.id, s.code, s.name, s.kind, s.branch_id, s.description,
+            s.default_fulfilling_store_id,
+            fs.name as fulfilling_store_name
+       from stores s
+       left join stores fs on fs.id = s.default_fulfilling_store_id
+      where s.tenant_id = $1 and s.id = $2`,
     [t.id, id],
   );
   return rows[0] ?? null;
+}
+
+export async function listStoreParLevels(storeId: string) {
+  const d = await db();
+  const t = await requireTenant();
+  const { rows } = await d.query<{
+    id: string;
+    item_id: string;
+    item_code: string;
+    item_name: string;
+    category_name: string;
+    uom: string;
+    min_qty: string;
+    max_qty: string;
+    qty_on_hand: string;
+    reorder_status: string;
+  }>(
+    `select l.id,
+            l.item_id,
+            i.code as item_code,
+            i.name as item_name,
+            c.name as category_name,
+            i.uom,
+            l.min_qty::text,
+            l.max_qty::text,
+            coalesce(soh.qty_on_hand, 0)::text as qty_on_hand,
+            case
+              when coalesce(soh.qty_on_hand, 0) < l.min_qty then 'REORDER NOW'
+              when l.max_qty > 0 and coalesce(soh.qty_on_hand, 0) > l.max_qty then 'OVERSTOCK'
+              else 'OK'
+            end as reorder_status
+       from store_item_levels l
+       join items i on i.id = l.item_id
+       join item_categories c on c.id = i.category_id
+       left join v_stock_on_hand soh
+         on soh.tenant_id = l.tenant_id
+        and soh.store_id  = l.store_id
+        and soh.item_id   = l.item_id
+      where l.tenant_id = $1 and l.store_id = $2
+      order by i.name`,
+    [t.id, storeId],
+  );
+  return rows;
+}
+
+export async function listAssignableItemsForPar(storeId: string) {
+  const d = await db();
+  const t = await requireTenant();
+  const { rows } = await d.query<{
+    id: string;
+    code: string;
+    name: string;
+    uom: string;
+    category_name: string;
+  }>(
+    `select i.id, i.code, i.name, i.uom, c.name as category_name
+       from items i
+       join item_categories c on c.id = i.category_id
+      where i.tenant_id = $1 and i.is_active
+        and not exists (
+          select 1 from store_item_levels l
+           where l.tenant_id = $1 and l.store_id = $2 and l.item_id = i.id
+        )
+      order by i.name`,
+    [t.id, storeId],
+  );
+  return rows;
 }
 
 export async function listItems() {
@@ -321,9 +396,14 @@ export async function listUsers() {
     store_id: string | null;
     store_name: string | null;
     is_active: boolean;
+    department_group: string;
+    all_stores_access: boolean;
+    assigned_store_ids: string[];
+    document_visibility: string;
   }>(
     `select u.id, u.username, u.display_name, u.role, u.store_id,
-            s.name as store_name, u.is_active
+            s.name as store_name, u.is_active,
+            u.department_group, u.all_stores_access, u.assigned_store_ids, u.document_visibility
        from users u
        left join stores s on s.id = u.store_id
       where u.tenant_id = $1
@@ -344,8 +424,13 @@ export async function getUser(id: string) {
     store_id: string | null;
     is_active: boolean;
     permissions: string[];
+    department_group: string;
+    all_stores_access: boolean;
+    assigned_store_ids: string[];
+    document_visibility: 'all' | 'department' | 'own';
   }>(
-    `select id, username, display_name, role, store_id, is_active, permissions
+    `select id, username, display_name, role, store_id, is_active, permissions,
+            department_group, all_stores_access, assigned_store_ids, document_visibility
        from users where tenant_id = $1 and id = $2`,
     [t.id, id],
   );

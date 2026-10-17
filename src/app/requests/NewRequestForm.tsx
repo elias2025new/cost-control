@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useState } from 'react';
-import { createRequest, type RequestFormState } from './actions';
+import { createRequest, getParSuggestionsAction, type RequestFormState } from './actions';
 
 interface Row {
   key: string;
@@ -24,20 +24,54 @@ export function NewRequestForm({
   const [state, action, pending] = useActionState<RequestFormState, FormData>(createRequest, {
     error: null,
   });
+  const [selectedStore, setSelectedStore] = useState(stores[0]?.id || '');
   const [rows, setRows] = useState<Row[]>([blank()]);
+  const [loadingPar, setLoadingPar] = useState(false);
+  const [parMsg, setParMsg] = useState<string | null>(null);
 
   const update = (key: string, patch: Partial<Row>) =>
     setRows((r) => r.map((row) => (row.key === key ? { ...row, ...patch } : row)));
 
+  const fillFromPar = async () => {
+    if (!selectedStore) return;
+    setLoadingPar(true);
+    setParMsg(null);
+    try {
+      const suggestions = await getParSuggestionsAction(selectedStore);
+      if (suggestions.length === 0) {
+        setParMsg('All items in this store are currently at or above par stock levels.');
+      } else {
+        setRows(
+          suggestions.map((s) => ({
+            key: newKey(),
+            itemId: s.itemId,
+            qty: s.suggestedQty,
+            note: `Par: ${s.maxQty} (On hand: ${s.currentQty})`,
+          })),
+        );
+        setParMsg(`Auto-filled ${suggestions.length} items needing replenishment to reach Par.`);
+      }
+    } catch {
+      setParMsg('Could not calculate par stock suggestions.');
+    } finally {
+      setLoadingPar(false);
+    }
+  };
+
   return (
-    <form action={action} className="px-5 py-5">
-      <div className="flex flex-wrap items-end gap-3 mb-4">
-        <label className="w-52">
+    <form action={action} className="px-5 py-5 space-y-4">
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="w-56">
           <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
             Requesting store
           </span>
           <select
             name="storeId"
+            value={selectedStore}
+            onChange={(e) => {
+              setSelectedStore(e.target.value);
+              setParMsg(null);
+            }}
             className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
           >
             {stores.map((s) => (
@@ -58,9 +92,26 @@ export function NewRequestForm({
             className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
           />
         </label>
+
+        <div className="pb-0.5">
+          <button
+            type="button"
+            onClick={fillFromPar}
+            disabled={loadingPar}
+            className="rounded-lg border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-3.5 py-2 text-[13px] font-medium hover:bg-brand-100 dark:hover:bg-brand-900/60 cursor-pointer disabled:opacity-50 transition"
+          >
+            {loadingPar ? 'Calculating Par…' : '⚡ Requisition from Par Stock'}
+          </button>
+        </div>
       </div>
 
-      <div className="space-y-2">
+      {parMsg && (
+        <div className="rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 px-3.5 py-2 text-[12.5px] text-sky-800 dark:text-sky-200">
+          {parMsg}
+        </div>
+      )}
+
+      <div className="space-y-2 pt-1">
         {rows.map((row) => (
           <div key={row.key} className="flex items-center gap-2">
             <select
@@ -89,13 +140,13 @@ export function NewRequestForm({
               value={row.note}
               onChange={(e) => update(row.key, { note: e.target.value })}
               placeholder="note"
-              className="w-40 rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
+              className="w-48 rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
             />
             <button
               type="button"
               onClick={() => setRows((r) => r.filter((x) => x.key !== row.key))}
               disabled={rows.length === 1}
-              className="shrink-0 rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-2.5 py-2 text-[12px] text-ink-500 hover:border-rose-300 hover:text-rose-700 disabled:opacity-40"
+              className="shrink-0 rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-2.5 py-2 text-[12px] text-ink-500 hover:border-rose-300 hover:text-rose-700 disabled:opacity-40 cursor-pointer"
               aria-label="Remove line"
             >
               ✕
@@ -104,20 +155,20 @@ export function NewRequestForm({
         ))}
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-4">
+      <div className="mt-4 flex items-center justify-between gap-4 pt-2">
         <button
           type="button"
           onClick={() => setRows((r) => [...r, blank()])}
-          className="rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-1.5 text-[12.5px] font-medium text-ink-700 hover:border-ink-300"
+          className="rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-1.5 text-[12.5px] font-medium text-ink-700 dark:text-ink-300 hover:border-ink-300 cursor-pointer"
         >
           + Add item
         </button>
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-ink-900 px-4 py-2 text-[13.5px] font-medium text-white hover:bg-ink-800 disabled:opacity-50"
+          className="rounded-lg bg-ink-900 dark:bg-ink-100 px-5 py-2 text-[13.5px] font-medium text-white dark:text-ink-900 hover:bg-ink-800 dark:hover:bg-ink-200 disabled:opacity-50 cursor-pointer transition"
         >
-          {pending ? 'Sending…' : 'Send request'}
+          {pending ? 'Sending…' : 'Submit Requisition for Approval'}
         </button>
       </div>
 

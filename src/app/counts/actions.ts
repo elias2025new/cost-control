@@ -83,7 +83,7 @@ export async function saveCount(
   const countId = String(formData.get('countId') ?? '');
   if (!countId) return { error: 'No count to save.' };
 
-  const entries: { lineId: string; countedQty: string | null; note: string | null }[] = [];
+  const entries: { lineId: string; countedQty: string | null; note: string | null; discrepancyReason?: string | null }[] = [];
   for (const [key, value] of formData.entries()) {
     if (!key.startsWith('qty_')) continue;
     const lineId = key.slice(4);
@@ -91,10 +91,12 @@ export async function saveCount(
     if (raw !== '' && !/^-?\d*\.?\d*$/.test(raw)) {
       return { error: `"${raw}" is not a number.` };
     }
+    const rawReason = String(formData.get(`reason_${lineId}`) ?? '').trim();
     entries.push({
       lineId,
       countedQty: raw === '' ? null : raw,
       note: (formData.get(`note_${lineId}`) as string | null) ?? null,
+      discrepancyReason: rawReason || null,
     });
   }
 

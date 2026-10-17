@@ -156,7 +156,19 @@ export async function connect(opts: ConnectOptions = {}): Promise<Database> {
     // pg hands numeric back as a string by default, which is what we want:
     // parsing a numeric into a JS float is exactly the bug design rule 4 is
     // there to prevent. Nothing in this codebase should ever undo that.
-    return new PgDatabase(new Pool({ connectionString: url }));
+    const isSsl =
+      url.includes('sslmode=require') ||
+      url.includes('.supabase.co') ||
+      url.includes('.neon.tech') ||
+      process.env.PGSSLMODE === 'require' ||
+      process.env.DATABASE_SSL === 'true';
+
+    return new PgDatabase(
+      new Pool({
+        connectionString: url,
+        ssl: isSsl ? { rejectUnauthorized: false } : undefined,
+      }),
+    );
   }
 
   const { PGlite } = await import('@electric-sql/pglite');

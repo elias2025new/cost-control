@@ -3,17 +3,23 @@
 import { useActionState } from 'react';
 import { createStore, type StoreFormState } from './actions';
 
-export function StoreForm({ branches }: { branches: { id: string; name: string }[] }) {
+export function StoreForm({
+  branches,
+  existingStores = [],
+}: {
+  branches: { id: string; name: string }[];
+  existingStores?: { id: string; name: string; kind: string }[];
+}) {
   const [state, action, pending] = useActionState<StoreFormState, FormData>(createStore, {
     error: null,
   });
 
   return (
-    <form action={action} className="px-5 py-5">
-      <div className="flex flex-wrap items-end gap-3">
-        <label className="w-52">
+    <form action={action} className="px-5 py-5 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <label>
           <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
-            Branch
+            Branch *
           </span>
           <select
             name="branchId"
@@ -27,58 +33,99 @@ export function StoreForm({ branches }: { branches: { id: string; name: string }
           </select>
         </label>
 
-        <label className="w-32">
+        <label>
           <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
-            Code
+            Store Code *
           </span>
           <input
             name="code"
-            placeholder="MAIN"
-            className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
+            placeholder="e.g. BAR-01 or KITCHEN"
+            required
+            className="w-full uppercase font-mono rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
           />
         </label>
 
-        <label className="flex-1 min-w-[200px]">
+        <label className="md:col-span-2">
           <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
-            Name
+            Store / Cost Center Name *
           </span>
           <input
             name="name"
-            placeholder="Main Store"
+            placeholder="e.g. Main Kitchen, Terrace Bar, Wine Cellar"
+            required
             className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
           />
         </label>
+      </div>
 
-        <label className="w-36">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <label>
           <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
-            Kind
+            Cost Center Role / Type *
           </span>
           <select
             name="kind"
+            defaultValue="kitchen"
             className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
           >
-            <option value="main">Main store</option>
-            <option value="kitchen">Kitchen</option>
-            <option value="bar">Bar</option>
+            <option value="main">📦 Main Warehouse / Central Store (Receives vendor purchases)</option>
+            <option value="kitchen">🍳 Kitchen Cost Center (Hot kitchen, pastry, production)</option>
+            <option value="bar">🍸 Bar Cost Center (Beverages, counter stock)</option>
+            <option value="cellar">🍷 Wine &amp; Spirit Cellar (Secured beverage storage)</option>
+            <option value="prep">🔪 Prep Station (Butchery, bakery, mise-en-place)</option>
+            <option value="outlet">🛎️ Service Outlet (Terrace, pool bar, banquets)</option>
           </select>
         </label>
 
+        <label>
+          <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
+            Default Fulfilling Store (MC Requisition Route)
+          </span>
+          <select
+            name="defaultFulfillingStoreId"
+            defaultValue=""
+            className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
+          >
+            <option value="">None (Standalone or Main Store)</option>
+            {existingStores.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.kind.toUpperCase()})
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <label className="block">
+          <span className="block text-[11px] uppercase tracking-wider text-ink-500 font-semibold mb-1.5">
+            Operational Notes / Location Description
+          </span>
+          <input
+            name="description"
+            placeholder="e.g. Ground floor bar station, 12-bottle speed rail, cold well"
+            className="w-full rounded-lg border border-ink-200 dark:border-zinc-700 bg-white dark:bg-[#1c1c1c] px-3 py-2 text-[13.5px]"
+          />
+        </label>
+      </div>
+
+      <div className="flex justify-end pt-1">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-ink-900 px-4 py-2 text-[13.5px] font-medium text-white hover:bg-ink-800 disabled:opacity-50"
+          className="rounded-lg bg-ink-900 px-5 py-2.5 text-[13.5px] font-medium text-white hover:bg-ink-800 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
         >
-          {pending ? 'Creating…' : 'Add store'}
+          {pending ? 'Creating…' : '＋ Add Store / Cost Center'}
         </button>
       </div>
 
       {state.error && (
-        <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] text-rose-800">
+        <div className="rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] text-rose-800">
           {state.error}
         </div>
       )}
       {state.ok && (
-        <div className="mt-3 rounded-lg border border-brand-100 bg-brand-50 px-3.5 py-2.5 text-[13px] text-brand-700">
+        <div className="rounded-lg border border-brand-100 bg-brand-50 px-3.5 py-2.5 text-[13px] text-brand-700">
           {state.ok}
         </div>
       )}

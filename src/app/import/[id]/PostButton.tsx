@@ -45,13 +45,13 @@ export function PostButton({
           type="submit"
           disabled={pending || !canPost}
           className={[
-            'shrink-0 rounded-lg px-5 py-2.5 text-[13.5px] font-medium transition-colors',
+            'shrink-0 rounded-lg px-5 py-2.5 text-[13.5px] font-medium transition-colors cursor-pointer',
             canPost && !pending
               ? 'bg-brand-600 text-white hover:bg-brand-700'
               : 'bg-ink-200 text-ink-400 cursor-not-allowed',
           ].join(' ')}
         >
-          {pending ? 'Posting…' : alreadyPosted ? 'Post again (no effect)' : 'Post to stock'}
+          {pending ? 'Exploding Recipes & Depleting…' : alreadyPosted ? 'Posted (Depletions Applied)' : 'Explode Recipes & Post Stock Depletions'}
         </button>
       </div>
 

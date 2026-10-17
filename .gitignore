@@ -4,4 +4,14 @@ node_modules/
 dist/
 *.log
 .env
-.env.local
+.env.*
+!.env.example
+tsconfig.tsbuildinfo
+.claude/
+tools/
+reference/software reference/
+Manual.pdf
+query.ts
+query_resolve.ts
+generate_single_cnet.*
+cnet_single_export.xlsx

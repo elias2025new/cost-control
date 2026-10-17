@@ -83,3 +83,34 @@ export async function cancelRequest(
   revalidatePath('/requests');
   return { error: null, ok: 'Request cancelled.' };
 }
+
+export async function approveRequestAction(requestId: string): Promise<{ error?: string; ok?: string }> {
+  try {
+    const d = await db();
+    const user = await requireUser();
+    const t = await requireTenant();
+    const { approveIssueRequest } = await import('../../domain/issueRequest');
+    await approveIssueRequest(d, t.id, requestId, {
+      userId: user.uid,
+      role: user.role,
+      storeId: user.storeId,
+    });
+    revalidatePath(`/requests/${requestId}`);
+    revalidatePath('/requests');
+    return { ok: 'Request approved by Department Head. Main store can now release stock.' };
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : 'Could not approve request.' };
+  }
+}
+
+export async function getParSuggestionsAction(storeId: string) {
+  try {
+    const d = await db();
+    const t = await requireTenant();
+    const { getParRequisitionSuggestions } = await import('../../domain/issueRequest');
+    return await getParRequisitionSuggestions(d, t.id, storeId);
+  } catch {
+    return [];
+  }
+}
+

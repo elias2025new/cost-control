@@ -86,6 +86,17 @@ export async function requirePermission(permission: string): Promise<CurrentUser
   throw new Error(`You do not have the required permission: ${permission}.`);
 }
 
+export async function requireStoreAccess(storeId: string): Promise<CurrentUser> {
+  const u = await requireUser();
+  if (u.role === 'admin' || u.allStoresAccess) {
+    return u;
+  }
+  if (u.storeId === storeId || u.assignedStoreIds?.includes(storeId)) {
+    return u;
+  }
+  throw new Error('You do not have access to this store.');
+}
+
 export async function listImports() {
   const d = await db();
   const t = await requireTenant();
@@ -283,9 +294,33 @@ export async function getDepletedLines(id: string) {
 export async function listStores() {
   const d = await db();
   const t = await requireTenant();
-  const { rows } = await d.query<{ id: string; code: string; name: string; kind: string }>(
-    `select id, code, name, kind from stores where tenant_id = $1 and is_active
-      order by case kind when 'main' then 0 when 'kitchen' then 1 else 2 end, name`,
+  const { rows } = await d.query<{
+    id: string;
+    code: string;
+    name: string;
+    kind: string;
+    description: string | null;
+    default_fulfilling_store_id: string | null;
+    fulfilling_store_name: string | null;
+    par_items_count: string;
+  }>(
+    `select s.id, s.code, s.name, s.kind, s.description,
+            s.default_fulfilling_store_id,
+            fs.name as fulfilling_store_name,
+            count(l.id)::text as par_items_count
+       from stores s
+       left join stores fs on fs.id = s.default_fulfilling_store_id
+       left join store_item_levels l on l.store_id = s.id and l.tenant_id = s.tenant_id
+      where s.tenant_id = $1 and s.is_active
+      group by s.id, s.code, s.name, s.kind, s.description, s.default_fulfilling_store_id, fs.name
+      order by case s.kind
+                 when 'main' then 0
+                 when 'cellar' then 1
+                 when 'prep' then 2
+                 when 'kitchen' then 3
+                 when 'bar' then 4
+                 else 5
+               end, s.name`,
     [t.id],
   );
   return rows;

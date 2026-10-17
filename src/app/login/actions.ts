@@ -32,8 +32,13 @@ export async function login(_prev: LoginFormState, formData: FormData): Promise<
       store_id: string | null;
       is_active: boolean;
       permissions: string[];
+      department_group: string;
+      all_stores_access: boolean;
+      assigned_store_ids: string[];
+      document_visibility: 'all' | 'department' | 'own';
     }>(
-      `select id, password_hash, display_name, role, store_id, is_active, permissions
+      `select id, password_hash, display_name, role, store_id, is_active, permissions,
+              department_group, all_stores_access, assigned_store_ids, document_visibility
          from users where tenant_id = $1 and username = $2`,
       [t.id, username],
     );
@@ -50,6 +55,10 @@ export async function login(_prev: LoginFormState, formData: FormData): Promise<
       storeId: user.store_id,
       displayName: user.display_name,
       permissions: user.permissions || [],
+      departmentGroup: user.department_group,
+      allStoresAccess: user.all_stores_access,
+      assignedStoreIds: user.assigned_store_ids || [],
+      documentVisibility: user.document_visibility,
       exp,
     });
 
@@ -62,7 +71,10 @@ export async function login(_prev: LoginFormState, formData: FormData): Promise<
       secure: process.env.NODE_ENV === 'production',
     });
 
-    redirectTo = user.role === 'admin' ? '/' : '/requests';
+    redirectTo =
+      user.role === 'admin' || user.department_group === 'controller' || user.department_group === 'management'
+        ? '/'
+        : '/requests';
   } catch (err) {
     return { error: `Could not sign in: ${(err as Error).message}` };
   }

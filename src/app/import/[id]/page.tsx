@@ -16,9 +16,16 @@ import {
   getImportCoverage,
   getTopUncosted,
   getDepletedLines,
+  listStores,
 } from '../../../lib/queries';
 import { etb, pct, qty, longDate, UNCOSTED_LABELS } from '../../../lib/format';
 import { dec } from '../../../lib/money';
+import { db } from '../../../lib/server-db';
+import {
+  getTheoreticalVsActualMatrix,
+  detectCostLeakage,
+  type LeakageAnalysis,
+} from '../../../domain/theoreticalReconciliation';
 import { PostButton } from './PostButton';
 
 export const dynamic = 'force-dynamic';
@@ -104,6 +111,27 @@ export default async function ImportDetail({ params }: { params: Promise<{ id: s
 
   const declared = im.declared_sub_total;
   const difference = declared ? dec(im.computed_sub_total).minus(dec(declared)) : null;
+
+  let leakage: LeakageAnalysis | null = null;
+  if (posted) {
+    try {
+      const d = await db();
+      const stores = await listStores();
+      const targetStore = stores.find((s) => s.kind === 'kitchen') ?? stores[0];
+      if (targetStore) {
+        const matrix = await getTheoreticalVsActualMatrix(
+          d,
+          tenant.id,
+          targetStore.id,
+          im.period_start,
+          im.period_end,
+        );
+        leakage = detectCostLeakage(matrix);
+      }
+    } catch {
+      // In case period has no stock counts yet
+    }
+  }
 
   const group = (list: typeof issues) => {
     const m = new Map<string, typeof issues>();
@@ -359,22 +387,97 @@ export default async function ImportDetail({ params }: { params: Promise<{ id: s
           </Card>
         )}
 
-        {/* -------------------------------------------------------- approvals */}
-        <Card
-          title="Approval routing"
-          hint="From your written specification - shown, not built"
-          right={<Badge tone="neutral">Not in this demo</Badge>}
-        >
-          <ApprovalChain
-            steps={[
-              'Outlet requests',
-              'Restaurant Manager approves',
-              'F&B Controller reviews',
-              'Storekeeper releases',
-            ]}
-            caption="Your specification asks for three authorisation levels before stock is released. The chain is modelled here so you can see it is understood; none of these steps is active, and posting in this demo bypasses them."
-          />
-        </Card>
+        {/* ----------------- Materials Control Theoretical Reconciliation & Cost Leakage */}
+        {posted && leakage && (
+          <Card
+            title="Materials Control Theoretical Reconciliation & Cost Leakage"
+            hint="Soll-Ist-Vergleich · Actual consumption vs. Theoretical recipe sales depletions"
+            right={
+              leakage.alertCount > 0 ? (
+                <Badge tone="block">{leakage.alertCount} High Leakage Alert{leakage.alertCount > 1 ? 's' : ''}</Badge>
+              ) : leakage.reviewCount > 0 ? (
+                <Badge tone="warn">{leakage.reviewCount} Need Review</Badge>
+              ) : (
+                <Badge tone="good">✓ Normal Variance</Badge>
+              )
+            }
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-ink-100 dark:divide-zinc-800 border-b border-ink-100 dark:border-zinc-800">
+              <Stat
+                label="Unexplained Leakage"
+                value={etb(leakage.totalLeakageValue.toString())}
+                unit="ETB"
+                tone={leakage.totalLeakageValue.greaterThan(0) ? 'bad' : 'good'}
+                note="capital lost beyond theoretical recipe consumption"
+              />
+              <Stat
+                label="High Leakage Items"
+                value={String(leakage.alertCount)}
+                note="items with variance > 500 ETB and > 5%"
+              />
+              <Stat
+                label="Review Items"
+                value={String(leakage.reviewCount)}
+                note="items requiring portion or waste audit"
+              />
+            </div>
+
+            {leakage.topLeakageItems.length > 0 && (
+              <div className="p-4 space-y-3">
+                <span className="text-[12px] uppercase tracking-wider text-ink-500 font-semibold">
+                  Top Unexplained Variance Articles
+                </span>
+                <table className="w-full text-[13px]">
+                  <thead className="bg-ink-50 dark:bg-[#111111] text-ink-500">
+                    <tr className="text-left">
+                      <Th>Article</Th>
+                      <Th>Category</Th>
+                      <Th right>Variance Qty</Th>
+                      <Th right>Loss Value</Th>
+                      <Th>Probable Cause</Th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-ink-100 dark:divide-zinc-800">
+                    {leakage.topLeakageItems.map((item) => (
+                      <tr key={item.itemCode} className="hover:bg-ink-50 dark:bg-[#111111]/60">
+                        <td className="px-5 py-2.5">
+                          <span className="font-mono text-[12px] text-ink-500">{item.itemCode}</span>
+                          <div className="font-medium text-ink-900 dark:text-zinc-100">{item.itemName}</div>
+                        </td>
+                        <td className="px-3 py-2.5 text-ink-500">{item.category}</td>
+                        <td className="px-3 py-2.5 text-right tnum text-rose-600 font-medium">
+                          +{qty(item.varianceQty.toString())}
+                        </td>
+                        <td className="px-3 py-2.5 text-right tnum text-rose-600 font-semibold">
+                          {etb(item.varianceValue.toString())}
+                        </td>
+                        <td className="px-5 py-2.5">
+                          <Badge tone="warn">{item.probableCause.replace(/_/g, ' ')}</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {leakage.recommendations.length > 0 && (
+              <div className="p-4 bg-amber-50/60 dark:bg-amber-950/20 border-t border-amber-200/60 dark:border-amber-900/40 rounded-b-xl space-y-2">
+                <span className="text-[11px] uppercase tracking-wider text-amber-800 dark:text-amber-300 font-semibold">
+                  Cost Controller Action Items
+                </span>
+                <ul className="space-y-1.5 text-[12.5px] text-amber-900 dark:text-amber-200">
+                  {leakage.recommendations.map((rec, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-amber-600 shrink-0">→</span>
+                      <span>{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </Card>
+        )}
       </div>
     </>
   );

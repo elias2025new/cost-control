@@ -4,6 +4,7 @@ import { PageHeader, Card, Badge, Empty, OnboardingNotice } from '../../../compo
 import { currentTenant, currentUser, listStores } from '../../../lib/queries';
 import { listUsers } from '../../../lib/masterData';
 import { UserForm } from './UserForm';
+import { HMC_DEPARTMENT_GROUPS, type DepartmentGroup } from '../../../domain/permissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,10 +54,10 @@ export default async function SetupUsersPage() {
                     Username
                   </th>
                   <th className="px-3 py-2.5 font-semibold text-[11px] uppercase tracking-wider">
-                    Role
+                    Department / Group
                   </th>
                   <th className="px-3 py-2.5 font-semibold text-[11px] uppercase tracking-wider">
-                    Store
+                    Store Access (C/S Filter)
                   </th>
                   <th className="px-5 py-2.5 font-semibold text-[11px] uppercase tracking-wider">
                     Status
@@ -64,33 +65,52 @@ export default async function SetupUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink-100">
-                {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-ink-50 dark:bg-[#111111]/60">
-                    <td className="px-5 py-2.5">
-                      <Link
-                        href={`/setup/users/${u.id}`}
-                        className="text-ink-900 dark:text-zinc-100 font-medium hover:text-brand-700"
-                      >
-                        {u.display_name}
-                      </Link>
-                      {u.id === me.uid && (
-                        <span className="ml-1.5 text-[11px] text-ink-400">(you)</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2.5 font-mono text-[12px] text-ink-500">{u.username}</td>
-                    <td className="px-3 py-2.5">
-                      <Badge tone={u.role === 'admin' ? 'good' : 'neutral'}>
-                        {u.role === 'admin' ? 'Administrator' : 'Store user'}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-2.5 text-ink-600">{u.store_name ?? '-'}</td>
-                    <td className="px-5 py-2.5">
-                      <Badge tone={u.is_active ? 'good' : 'neutral'}>
-                        {u.is_active ? 'Active' : 'Deactivated'}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
+                {users.map((u) => {
+                  const groupName =
+                    (u.department_group as DepartmentGroup) in HMC_DEPARTMENT_GROUPS
+                      ? HMC_DEPARTMENT_GROUPS[u.department_group as DepartmentGroup].name
+                      : u.department_group;
+
+                  const storeAccessLabel = u.all_stores_access
+                    ? 'All Stores (Company-wide)'
+                    : u.store_name ?? (u.assigned_store_ids?.length ? `${u.assigned_store_ids.length} Stores` : '-');
+
+                  return (
+                    <tr key={u.id} className="hover:bg-ink-50 dark:bg-[#111111]/60">
+                      <td className="px-5 py-2.5">
+                        <Link
+                          href={`/setup/users/${u.id}`}
+                          className="text-ink-900 dark:text-zinc-100 font-medium hover:text-brand-700"
+                        >
+                          {u.display_name}
+                        </Link>
+                        {u.id === me.uid && (
+                          <span className="ml-1.5 text-[11px] text-ink-400">(you)</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2.5 font-mono text-[12px] text-ink-500">{u.username}</td>
+                      <td className="px-3 py-2.5">
+                        <Badge tone={u.department_group === 'admin' ? 'good' : u.department_group === 'controller' ? 'info' : 'neutral'}>
+                          {groupName}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-2.5 text-ink-600 dark:text-zinc-300">
+                        {u.all_stores_access ? (
+                          <span className="font-medium text-brand-600 dark:text-brand-400">
+                            {storeAccessLabel}
+                          </span>
+                        ) : (
+                          storeAccessLabel
+                        )}
+                      </td>
+                      <td className="px-5 py-2.5">
+                        <Badge tone={u.is_active ? 'good' : 'neutral'}>
+                          {u.is_active ? 'Active' : 'Deactivated'}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

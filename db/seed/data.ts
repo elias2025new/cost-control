@@ -16,9 +16,10 @@ export const TENANT = { code: 'PRIME', name: 'Prime Hospitality Business Group' 
 export const BRANCH = { code: 'SIYONAT', name: 'Siyonat Branch' };
 
 export const STORES = [
-  { code: 'MAIN', name: 'Main Store', kind: 'main' as const },
-  { code: 'KITCHEN', name: 'Outlet Kitchen', kind: 'kitchen' as const },
-  { code: 'BAR', name: 'Outlet Bar', kind: 'bar' as const },
+  { code: 'MAIN', name: 'Central Store (Warehouse)', kind: 'main' as const },
+  { code: 'KITCHEN', name: 'Main Kitchen', kind: 'kitchen' as const },
+  { code: 'BAR', name: 'Main Bar', kind: 'bar' as const },
+  { code: 'PREP', name: 'Pastry & Prep Kitchen', kind: 'prep' as const },
 ];
 
 export const CATEGORIES = [
@@ -43,12 +44,17 @@ export interface SeedItem {
   category: string;
   uom: string;
   cost: string;
-  outlet: 'KITCHEN' | 'BAR';
+  outlet: 'KITCHEN' | 'BAR' | 'PREP';
   openingQty: string;
   /** a second receipt at a different price, so the moving average is visibly moving */
   secondReceipt?: { qty: string; cost: string };
   min?: string;
   max?: string;
+  // HMC Master Data additions:
+  purchaseUom?: string;
+  packFactor?: string;
+  lossPercent?: string;
+  abcClass?: 'A' | 'B' | 'C';
 }
 
 export const COST_EFFECTIVE_FROM = '2026-07-01';
@@ -61,34 +67,48 @@ export const COST_EFFECTIVE_FROM = '2026-07-01';
  */
 export const ITEMS: SeedItem[] = [
   // --- kitchen -------------------------------------------------------------
-  { code: 'RM-BEEF-KITFO', name: 'Beef, lean minced (kitfo grade)', category: 'MEAT', uom: 'Kg', cost: '1100.00', outlet: 'KITCHEN', openingQty: '300', secondReceipt: { qty: '300', cost: '1150.00' }, min: '60', max: '400' },
-  { code: 'RM-BEEF-FILLET', name: 'Beef fillet', category: 'MEAT', uom: 'Kg', cost: '1400.00', outlet: 'KITCHEN', openingQty: '150', secondReceipt: { qty: '150', cost: '1450.00' }, min: '40', max: '220' },
-  { code: 'RM-AYIB', name: 'Ayib (Ethiopian cottage cheese)', category: 'DAIRY', uom: 'Kg', cost: '320.00', outlet: 'KITCHEN', openingQty: '200', min: '30', max: '150' },
-  { code: 'RM-GOMEN', name: 'Gomen (collard greens)', category: 'PRODUCE', uom: 'Kg', cost: '60.00', outlet: 'KITCHEN', openingQty: '250', min: '35', max: '190' },
-  { code: 'RM-TEFF', name: 'Teff flour', category: 'GRAIN', uom: 'Kg', cost: '130.00', outlet: 'KITCHEN', openingQty: '1600', min: '200', max: '1200' },
-  { code: 'RM-BUTTER', name: 'Butter (kibe)', category: 'DAIRY', uom: 'Kg', cost: '900.00', outlet: 'KITCHEN', openingQty: '120', min: '15', max: '90' },
-  { code: 'RM-ONION', name: 'Red onion', category: 'PRODUCE', uom: 'Kg', cost: '90.00', outlet: 'KITCHEN', openingQty: '120', min: '20', max: '90' },
-  { code: 'RM-TOMATO', name: 'Tomato', category: 'PRODUCE', uom: 'Kg', cost: '80.00', outlet: 'KITCHEN', openingQty: '100', min: '15', max: '75' },
-  { code: 'RM-KARIA', name: 'Green chilli (karia)', category: 'PRODUCE', uom: 'Kg', cost: '120.00', outlet: 'KITCHEN', openingQty: '25', min: '8', max: '20' },
-  { code: 'RM-GINGER', name: 'Ginger', category: 'PRODUCE', uom: 'Kg', cost: '220.00', outlet: 'KITCHEN', openingQty: '12', min: '4', max: '9' },
-  { code: 'RM-GARLIC', name: 'Garlic', category: 'PRODUCE', uom: 'Kg', cost: '400.00', outlet: 'KITCHEN', openingQty: '12', min: '4', max: '9' },
-  { code: 'RM-KORARIMA', name: 'Korarima (Ethiopian cardamom)', category: 'SPICE', uom: 'Kg', cost: '2200.00', outlet: 'KITCHEN', openingQty: '5', min: '2', max: '4' },
-  { code: 'RM-BESOBELA', name: 'Besobela (sacred basil)', category: 'SPICE', uom: 'Kg', cost: '700.00', outlet: 'KITCHEN', openingQty: '4', min: '1', max: '3' },
-  { code: 'RM-MITMITA', name: 'Mitmita', category: 'SPICE', uom: 'Kg', cost: '900.00', outlet: 'KITCHEN', openingQty: '20', min: '4', max: '15' },
-  { code: 'RM-SALT', name: 'Iodized salt', category: 'SPICE', uom: 'Kg', cost: '30.00', outlet: 'KITCHEN', openingQty: '40', min: '10', max: '30' },
-  { code: 'RM-ROSEMARY', name: 'Rosemary', category: 'SPICE', uom: 'Kg', cost: '400.00', outlet: 'KITCHEN', openingQty: '3', min: '1', max: '3' },
+  { code: 'RM-BEEF-KITFO', name: 'Beef, lean minced (kitfo grade)', category: 'MEAT', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '12.0', abcClass: 'A', cost: '1100.00', outlet: 'KITCHEN', openingQty: '300', secondReceipt: { qty: '300', cost: '1150.00' }, min: '60', max: '400' },
+  { code: 'RM-BEEF-FILLET', name: 'Beef fillet', category: 'MEAT', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '15.0', abcClass: 'A', cost: '1400.00', outlet: 'KITCHEN', openingQty: '150', secondReceipt: { qty: '150', cost: '1450.00' }, min: '40', max: '220' },
+  { code: 'RM-AYIB', name: 'Ayib (Ethiopian cottage cheese)', category: 'DAIRY', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '5.0', abcClass: 'B', cost: '320.00', outlet: 'KITCHEN', openingQty: '200', min: '30', max: '150' },
+  { code: 'RM-GOMEN', name: 'Gomen (collard greens)', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '10.0', abcClass: 'B', cost: '60.00', outlet: 'KITCHEN', openingQty: '250', min: '35', max: '190' },
+  { code: 'RM-TEFF', name: 'Teff flour', category: 'GRAIN', uom: 'Kg', purchaseUom: 'Bag', packFactor: '50', lossPercent: '2.0', abcClass: 'A', cost: '130.00', outlet: 'KITCHEN', openingQty: '1600', min: '200', max: '1200' },
+  { code: 'RM-BUTTER', name: 'Butter (kibe)', category: 'DAIRY', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '8.0', abcClass: 'A', cost: '900.00', outlet: 'KITCHEN', openingQty: '120', min: '15', max: '90' },
+  { code: 'RM-ONION', name: 'Red onion', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Bag', packFactor: '25', lossPercent: '10.0', abcClass: 'B', cost: '90.00', outlet: 'KITCHEN', openingQty: '120', min: '20', max: '90' },
+  { code: 'RM-TOMATO', name: 'Tomato', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Crate', packFactor: '20', lossPercent: '12.0', abcClass: 'B', cost: '80.00', outlet: 'KITCHEN', openingQty: '100', min: '15', max: '75' },
+  { code: 'RM-KARIA', name: 'Green chilli (karia)', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '5.0', abcClass: 'C', cost: '120.00', outlet: 'KITCHEN', openingQty: '25', min: '8', max: '20' },
+  { code: 'RM-GINGER', name: 'Ginger', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '14.0', abcClass: 'C', cost: '220.00', outlet: 'KITCHEN', openingQty: '12', min: '4', max: '9' },
+  { code: 'RM-GARLIC', name: 'Garlic', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '8.0', abcClass: 'C', cost: '400.00', outlet: 'KITCHEN', openingQty: '12', min: '4', max: '9' },
+  { code: 'RM-KORARIMA', name: 'Korarima (Ethiopian cardamom)', category: 'SPICE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '5.0', abcClass: 'A', cost: '2200.00', outlet: 'KITCHEN', openingQty: '5', min: '2', max: '4' },
+  { code: 'RM-BESOBELA', name: 'Besobela (sacred basil)', category: 'SPICE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '5.0', abcClass: 'C', cost: '700.00', outlet: 'KITCHEN', openingQty: '4', min: '1', max: '3' },
+  { code: 'RM-MITMITA', name: 'Mitmita', category: 'SPICE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '2.0', abcClass: 'B', cost: '900.00', outlet: 'KITCHEN', openingQty: '20', min: '4', max: '15' },
+  { code: 'RM-SALT', name: 'Iodized salt', category: 'SPICE', uom: 'Kg', purchaseUom: 'Bag', packFactor: '25', lossPercent: '1.0', abcClass: 'C', cost: '30.00', outlet: 'KITCHEN', openingQty: '40', min: '10', max: '30' },
+  { code: 'RM-ROSEMARY', name: 'Rosemary', category: 'SPICE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '10.0', abcClass: 'C', cost: '400.00', outlet: 'KITCHEN', openingQty: '3', min: '1', max: '3' },
 
   // --- bar -----------------------------------------------------------------
-  { code: 'RM-COFFEE', name: 'Coffee beans, roasted', category: 'HOTBEV', uom: 'Kg', cost: '750.00', outlet: 'BAR', openingQty: '60', secondReceipt: { qty: '60', cost: '790.00' }, min: '20', max: '90' },
-  { code: 'RM-TEALEAF', name: 'Black tea leaves', category: 'HOTBEV', uom: 'Kg', cost: '600.00', outlet: 'BAR', openingQty: '8', min: '3', max: '6' },
-  { code: 'RM-MILK', name: 'Fresh milk', category: 'DAIRY', uom: 'Ltr', cost: '110.00', outlet: 'BAR', openingQty: '90', min: '20', max: '70' },
-  { code: 'RM-SUGAR', name: 'White sugar', category: 'SPICE', uom: 'Kg', cost: '90.00', outlet: 'BAR', openingQty: '120', min: '25', max: '90' },
-  { code: 'RM-AMBO', name: 'Ambo water 500ml', category: 'SOFT', uom: 'Bottle', cost: '45.00', outlet: 'BAR', openingQty: '3000', min: '400', max: '2300' },
-  { code: 'RM-WATER-S', name: 'Bottled water, small', category: 'SOFT', uom: 'Bottle', cost: '25.00', outlet: 'BAR', openingQty: '3200', min: '450', max: '2400' },
-  { code: 'RM-RUM', name: 'White rum', category: 'BAR', uom: 'Ltr', cost: '2800.00', outlet: 'BAR', openingQty: '12', min: '3', max: '9' },
-  { code: 'RM-MINT', name: 'Fresh mint', category: 'PRODUCE', uom: 'Kg', cost: '250.00', outlet: 'BAR', openingQty: '4', min: '1', max: '3' },
-  { code: 'RM-LIME', name: 'Fresh lime', category: 'PRODUCE', uom: 'Kg', cost: '180.00', outlet: 'BAR', openingQty: '10', min: '3', max: '8' },
-  { code: 'RM-SODA', name: 'Soda water', category: 'BAR', uom: 'Ltr', cost: '120.00', outlet: 'BAR', openingQty: '30', min: '8', max: '23' },
+  { code: 'RM-COFFEE', name: 'Coffee beans, roasted', category: 'HOTBEV', uom: 'Kg', purchaseUom: 'Bag', packFactor: '5', lossPercent: '3.0', abcClass: 'A', cost: '750.00', outlet: 'BAR', openingQty: '60', secondReceipt: { qty: '60', cost: '790.00' }, min: '20', max: '90' },
+  { code: 'RM-TEALEAF', name: 'Black tea leaves', category: 'HOTBEV', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '2.0', abcClass: 'C', cost: '600.00', outlet: 'BAR', openingQty: '8', min: '3', max: '6' },
+  { code: 'RM-MILK', name: 'Fresh milk', category: 'DAIRY', uom: 'Ltr', purchaseUom: 'Crate', packFactor: '10', lossPercent: '2.0', abcClass: 'B', cost: '110.00', outlet: 'BAR', openingQty: '90', min: '20', max: '70' },
+  { code: 'RM-SUGAR', name: 'White sugar', category: 'SPICE', uom: 'Kg', purchaseUom: 'Bag', packFactor: '50', lossPercent: '1.0', abcClass: 'B', cost: '90.00', outlet: 'BAR', openingQty: '120', min: '25', max: '90' },
+  { code: 'RM-AMBO', name: 'Ambo water 500ml', category: 'SOFT', uom: 'Bottle', purchaseUom: 'Crate', packFactor: '24', lossPercent: '0.0', abcClass: 'B', cost: '45.00', outlet: 'BAR', openingQty: '3000', min: '400', max: '2300' },
+  { code: 'RM-WATER-S', name: 'Bottled water, small', category: 'SOFT', uom: 'Bottle', purchaseUom: 'Crate', packFactor: '24', lossPercent: '0.0', abcClass: 'B', cost: '25.00', outlet: 'BAR', openingQty: '3200', min: '450', max: '2400' },
+  { code: 'RM-RUM', name: 'White rum', category: 'BAR', uom: 'Ltr', purchaseUom: 'Bottle', packFactor: '0.75', lossPercent: '2.0', abcClass: 'A', cost: '2800.00', outlet: 'BAR', openingQty: '12', min: '3', max: '9' },
+  { code: 'RM-MINT', name: 'Fresh mint', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '15.0', abcClass: 'C', cost: '250.00', outlet: 'BAR', openingQty: '4', min: '1', max: '3' },
+  { code: 'RM-LIME', name: 'Fresh lime', category: 'PRODUCE', uom: 'Kg', purchaseUom: 'Kg', packFactor: '1', lossPercent: '20.0', abcClass: 'C', cost: '180.00', outlet: 'BAR', openingQty: '10', min: '3', max: '8' },
+  { code: 'RM-SODA', name: 'Soda water', category: 'BAR', uom: 'Ltr', purchaseUom: 'Crate', packFactor: '24', lossPercent: '0.0', abcClass: 'B', cost: '120.00', outlet: 'BAR', openingQty: '30', min: '8', max: '23' },
+];
+
+export interface SeedItemCustomConversion {
+  itemCode: string;
+  fromUom: string;
+  toUom: string;
+  factor: string;
+  note?: string;
+}
+
+export const ITEM_CUSTOM_CONVERSIONS: SeedItemCustomConversion[] = [
+  { itemCode: 'RM-AMBO', fromUom: 'bottle', toUom: 'ml', factor: '500', note: 'Ambo 500ml glass bottle' },
+  { itemCode: 'RM-WATER-S', fromUom: 'bottle', toUom: 'ml', factor: '500', note: 'Small 500ml plastic water bottle' },
+  { itemCode: 'RM-RUM', fromUom: 'bottle', toUom: 'ml', factor: '750', note: 'Standard 750ml liquor bottle' },
 ];
 
 /**
@@ -339,3 +359,159 @@ export const MENU_RECIPES: SeedRecipe[] = [
     ],
   },
 ];
+
+export interface SeedSupplier {
+  code: string;
+  name: string;
+  contact?: string;
+}
+
+export const SUPPLIERS: SeedSupplier[] = [
+  { code: 'SUP-MEAT', name: 'Addis Abattoir Enterprise', contact: '+251-11-442-1234' },
+  { code: 'SUP-BGI', name: 'BGI Ethiopia Beverages', contact: '+251-11-551-5000' },
+  { code: 'SUP-GRAIN', name: 'Merkato Wholesale Grain Traders', contact: '+251-11-275-8899' },
+  { code: 'SUP-PRODUCE', name: 'Atkilt Tera Fresh Farm Supply', contact: '+251-11-277-3344' },
+  { code: 'SUP-DAIRY', name: 'Shola Dairy & Sidama Coffee', contact: '+251-11-646-7788' },
+];
+
+export interface SeedSupplierPrice {
+  supplierCode: string;
+  itemCode: string;
+  supplierItemCode?: string;
+  purchaseUom: string;
+  packFactor: string;
+  contractPrice: string;
+  taxRate?: string;
+  minOrderQty?: string;
+  leadTimeDays?: number;
+  isPreferred?: boolean;
+}
+
+export const SUPPLIER_PRICES: SeedSupplierPrice[] = [
+  // Meat
+  { supplierCode: 'SUP-MEAT', itemCode: 'RM-BEEF-KITFO', purchaseUom: 'Kg', packFactor: '1', contractPrice: '1100.00', minOrderQty: '20', leadTimeDays: 1, isPreferred: true },
+  { supplierCode: 'SUP-MEAT', itemCode: 'RM-BEEF-FILLET', purchaseUom: 'Kg', packFactor: '1', contractPrice: '1400.00', minOrderQty: '10', leadTimeDays: 1, isPreferred: true },
+
+  // Beverages
+  { supplierCode: 'SUP-BGI', itemCode: 'RM-AMBO', purchaseUom: 'Crate', packFactor: '24', contractPrice: '1080.00', minOrderQty: '5', leadTimeDays: 2, isPreferred: true },
+  { supplierCode: 'SUP-BGI', itemCode: 'RM-WATER-S', purchaseUom: 'Crate', packFactor: '24', contractPrice: '600.00', minOrderQty: '10', leadTimeDays: 2, isPreferred: true },
+  { supplierCode: 'SUP-BGI', itemCode: 'RM-SODA', purchaseUom: 'Crate', packFactor: '24', contractPrice: '2880.00', minOrderQty: '2', leadTimeDays: 2, isPreferred: true },
+
+  // Grains & Sugar
+  { supplierCode: 'SUP-GRAIN', itemCode: 'RM-TEFF', purchaseUom: 'Bag', packFactor: '50', contractPrice: '6500.00', minOrderQty: '5', leadTimeDays: 3, isPreferred: true },
+  { supplierCode: 'SUP-GRAIN', itemCode: 'RM-SUGAR', purchaseUom: 'Bag', packFactor: '50', contractPrice: '4500.00', minOrderQty: '2', leadTimeDays: 2, isPreferred: true },
+  { supplierCode: 'SUP-GRAIN', itemCode: 'RM-SALT', purchaseUom: 'Bag', packFactor: '25', contractPrice: '750.00', minOrderQty: '1', leadTimeDays: 2, isPreferred: true },
+
+  // Produce
+  { supplierCode: 'SUP-PRODUCE', itemCode: 'RM-ONION', purchaseUom: 'Bag', packFactor: '25', contractPrice: '2250.00', minOrderQty: '2', leadTimeDays: 1, isPreferred: true },
+  { supplierCode: 'SUP-PRODUCE', itemCode: 'RM-TOMATO', purchaseUom: 'Crate', packFactor: '20', contractPrice: '1600.00', minOrderQty: '2', leadTimeDays: 1, isPreferred: true },
+
+  // Dairy & Coffee
+  { supplierCode: 'SUP-DAIRY', itemCode: 'RM-BUTTER', purchaseUom: 'Kg', packFactor: '1', contractPrice: '900.00', minOrderQty: '5', leadTimeDays: 1, isPreferred: true },
+  { supplierCode: 'SUP-DAIRY', itemCode: 'RM-MILK', purchaseUom: 'Crate', packFactor: '10', contractPrice: '1100.00', minOrderQty: '3', leadTimeDays: 1, isPreferred: true },
+  { supplierCode: 'SUP-DAIRY', itemCode: 'RM-COFFEE', purchaseUom: 'Bag', packFactor: '5', contractPrice: '3750.00', minOrderQty: '2', leadTimeDays: 2, isPreferred: true },
+];
+
+export interface SeedStaffUser {
+  username: string;
+  password: string;
+  displayName: string;
+  role: 'admin' | 'store_user';
+  departmentGroup: 'admin' | 'controller' | 'storekeeper' | 'chef' | 'bar';
+  storeCode?: string;
+  allStoresAccess?: boolean;
+  documentVisibility?: 'all' | 'department' | 'own';
+  permissions: string[];
+}
+
+export const SEED_STAFF_USERS: SeedStaffUser[] = [
+  {
+    username: 'admin',
+    password: 'password123',
+    displayName: 'General Manager (Admin)',
+    role: 'admin',
+    departmentGroup: 'admin',
+    allStoresAccess: true,
+    documentVisibility: 'all',
+    permissions: ['all'],
+  },
+  {
+    username: 'controller',
+    password: 'password123',
+    displayName: 'F&B Cost Controller',
+    role: 'store_user',
+    departmentGroup: 'controller',
+    allStoresAccess: true,
+    documentVisibility: 'all',
+    permissions: [
+      'sales_eod_upload',
+      'sales_view',
+      'price_override_approve',
+      'recount_authorize',
+      'waste_approve',
+      'reports_view',
+      'variance_view',
+      'ledger_view',
+      'recipe_view',
+      'recipe_cost_manage',
+    ],
+  },
+  {
+    username: 'storekeeper',
+    password: 'password123',
+    displayName: 'Central Storekeeper',
+    role: 'store_user',
+    departmentGroup: 'storekeeper',
+    storeCode: 'MAIN',
+    allStoresAccess: false,
+    documentVisibility: 'all',
+    permissions: [
+      'po_create',
+      'purchase_receive',
+      'issue_fulfill',
+      'transfer_manage',
+      'count_entry',
+      'waste_log',
+      'ledger_view',
+    ],
+  },
+  {
+    username: 'chef',
+    password: 'password123',
+    displayName: 'Executive Chef',
+    role: 'store_user',
+    departmentGroup: 'chef',
+    storeCode: 'KITCHEN',
+    allStoresAccess: false,
+    documentVisibility: 'department',
+    permissions: [
+      'issue_request',
+      'issue_authorize',
+      'butcher_test',
+      'production_batch',
+      'waste_log',
+      'count_entry',
+      'recipe_view',
+      'ledger_view',
+    ],
+  },
+  {
+    username: 'bar',
+    password: 'password123',
+    displayName: 'Bar Manager',
+    role: 'store_user',
+    departmentGroup: 'bar',
+    storeCode: 'BAR',
+    allStoresAccess: false,
+    documentVisibility: 'department',
+    permissions: [
+      'issue_request',
+      'transfer_manage',
+      'waste_log',
+      'count_entry',
+      'recipe_view',
+      'ledger_view',
+    ],
+  },
+];
+

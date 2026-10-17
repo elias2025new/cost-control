@@ -42,21 +42,25 @@ export function pct(v: string | number | Decimal | null | undefined, dp = 2): st
 }
 
 /** 3 August 2026 */
-export function longDate(iso: string | null | undefined): string {
+export function longDate(iso: string | Date | null | undefined): string {
   if (!iso) return '-';
-  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  const str = iso instanceof Date ? iso.toISOString().slice(0, 10) : String(iso).slice(0, 10);
+  const [y, m, d] = str.split('-').map(Number);
+  if (isNaN(y) || isNaN(m) || isNaN(d)) return String(iso);
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
-  return `${d} ${months[m - 1]} ${y}`;
+  return `${d} ${months[m - 1] ?? ''} ${y}`;
 }
 
-export function shortDate(iso: string | null | undefined): string {
+export function shortDate(iso: string | Date | null | undefined): string {
   if (!iso) return '-';
-  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  const str = iso instanceof Date ? iso.toISOString().slice(0, 10) : String(iso).slice(0, 10);
+  const [y, m, d] = str.split('-').map(Number);
+  if (isNaN(y) || isNaN(m) || isNaN(d)) return String(iso);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${d} ${months[m - 1]} ${y}`;
+  return `${d} ${months[m - 1] ?? ''} ${y}`;
 }
 
 export const MOVEMENT_LABELS: Record<string, string> = {

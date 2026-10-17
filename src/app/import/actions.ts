@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '../../lib/server-db';
-import { requireTenant, requireAdmin } from '../../lib/queries';
+import { requireTenant, requirePermission } from '../../lib/queries';
 import { importCnetUpload, ImportError } from '../../domain/importCnet';
 import { postSalesImport, PostImportError } from '../../domain/postSalesImport';
 
@@ -25,7 +25,7 @@ export async function uploadSalesFile(
   try {
     const buf = Buffer.from(await file.arrayBuffer());
     const d = await db();
-    await requireAdmin();
+    await requirePermission('sales_eod_upload');
     const t = await requireTenant();
     const result = await importCnetUpload(d, t.id, buf, file.name);
     importId = result.importId;
@@ -46,6 +46,7 @@ export async function postImport(_prev: PostState, formData: FormData): Promise<
 
   try {
     const d = await db();
+    await requirePermission('sales_eod_upload');
     const result = await postSalesImport(d, id);
     revalidatePath(`/import/${id}`);
     revalidatePath('/import');

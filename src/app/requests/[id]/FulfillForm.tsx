@@ -163,3 +163,45 @@ export function CancelForm({ requestId }: { requestId: string }) {
     </form>
   );
 }
+
+export function ApproveForm({
+  requestId,
+  onApprove,
+}: {
+  requestId: string;
+  onApprove: (id: string) => Promise<{ error?: string; ok?: string }>;
+}) {
+  const [pending, setPending] = useState(false);
+  const [msg, setMsg] = useState<{ error?: string; ok?: string } | null>(null);
+
+  return (
+    <div className="px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div>
+        <h4 className="text-[13.5px] font-semibold text-ink-900 dark:text-zinc-100">
+          Department Head Authorization Required
+        </h4>
+        <p className="text-[12.5px] text-ink-500 mt-0.5">
+          Pre-approve this requisition so the Central Storekeeper is authorized to release stock.
+        </p>
+        {msg?.error && <p className="mt-2 text-[12px] text-rose-600">{msg.error}</p>}
+        {msg?.ok && <p className="mt-2 text-[12px] text-brand-600 font-medium">{msg.ok}</p>}
+      </div>
+
+      <button
+        type="button"
+        disabled={pending}
+        onClick={async () => {
+          setPending(true);
+          setMsg(null);
+          const res = await onApprove(requestId);
+          setMsg(res);
+          setPending(false);
+        }}
+        className="shrink-0 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-[13px] font-medium transition cursor-pointer disabled:opacity-50"
+      >
+        {pending ? 'Approving…' : '✓ Pre-Approve Requisition'}
+      </button>
+    </div>
+  );
+}
+

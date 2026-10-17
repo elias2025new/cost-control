@@ -24,8 +24,12 @@ export async function createUser(_prev: UserFormState, formData: FormData): Prom
   const username = String(formData.get('username') ?? '').trim();
   const displayName = String(formData.get('displayName') ?? '').trim();
   const password = String(formData.get('password') ?? '');
-  const role = String(formData.get('role') ?? '');
+  const departmentGroup = String(formData.get('departmentGroup') ?? 'custom');
+  const role = departmentGroup === 'admin' ? 'admin' : String(formData.get('role') ?? 'store_user');
+  const allStoresAccess = departmentGroup === 'admin' || formData.get('allStoresAccess') === 'on' || formData.get('allStoresAccess') === 'true';
   const storeId = String(formData.get('storeId') ?? '') || null;
+  const assignedStoreIds = formData.getAll('assignedStoreIds').map(String);
+  const documentVisibility = String(formData.get('documentVisibility') ?? (allStoresAccess ? 'all' : 'department'));
   const permissions = formData.getAll('permissions').map(String);
 
   if (!username) return { error: 'Choose a username.' };
@@ -34,24 +38,35 @@ export async function createUser(_prev: UserFormState, formData: FormData): Prom
   }
   if (!displayName) return { error: 'Enter the person’s name.' };
   if (password.length < 8) return { error: 'Password must be at least 8 characters.' };
-  if (role !== 'admin' && role !== 'store_user') return { error: 'Choose a role.' };
-  if (role === 'store_user' && !storeId) return { error: 'Choose which store this user works in.' };
+  if (!allStoresAccess && !storeId && assignedStoreIds.length === 0) {
+    return { error: 'Choose which store(s) this user has access to.' };
+  }
+
+  // Ensure primary storeId is in assignedStoreIds if present
+  const finalAssignedStores = Array.from(new Set([...assignedStoreIds, ...(storeId ? [storeId] : [])]));
 
   try {
     await requireAdmin();
     const d = await db();
     const t = await requireTenant();
     await d.query(
-      `insert into users (tenant_id, username, password_hash, display_name, role, store_id, permissions)
-       values ($1, $2, $3, $4, $5, $6, $7)`,
+      `insert into users (
+         tenant_id, username, password_hash, display_name, role, store_id, permissions,
+         department_group, all_stores_access, assigned_store_ids, document_visibility
+       )
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         t.id,
         username,
         hashPassword(password),
         displayName,
         role,
-        role === 'store_user' ? storeId : null,
-        JSON.stringify(role === 'store_user' ? permissions : []),
+        storeId,
+        JSON.stringify(departmentGroup === 'admin' ? ['all'] : permissions),
+        departmentGroup,
+        allStoresAccess,
+        JSON.stringify(allStoresAccess ? [] : finalAssignedStores),
+        documentVisibility,
       ],
     );
   } catch (err) {
@@ -70,29 +85,39 @@ export async function updateUser(_prev: UserFormState, formData: FormData): Prom
   const username = String(formData.get('username') ?? '').trim();
   const displayName = String(formData.get('displayName') ?? '').trim();
   const password = String(formData.get('password') ?? '');
-  const role = String(formData.get('role') ?? '');
+  const departmentGroup = String(formData.get('departmentGroup') ?? 'custom');
+  const role = departmentGroup === 'admin' ? 'admin' : String(formData.get('role') ?? 'store_user');
+  const allStoresAccess = departmentGroup === 'admin' || formData.get('allStoresAccess') === 'on' || formData.get('allStoresAccess') === 'true';
   const storeId = String(formData.get('storeId') ?? '') || null;
+  const assignedStoreIds = formData.getAll('assignedStoreIds').map(String);
+  const documentVisibility = String(formData.get('documentVisibility') ?? (allStoresAccess ? 'all' : 'department'));
   const permissions = formData.getAll('permissions').map(String);
 
   if (!id) return { error: 'Missing account.' };
   if (!username) return { error: 'Choose a username.' };
   if (!displayName) return { error: 'Enter the person’s name.' };
-  if (role !== 'admin' && role !== 'store_user') return { error: 'Choose a role.' };
-  if (role === 'store_user' && !storeId) return { error: 'Choose which store this user works in.' };
-  // Blank password means "leave it as it is" - the form never round-trips
-  // the existing hash, so there is nothing to accidentally overwrite with.
+  if (!allStoresAccess && !storeId && assignedStoreIds.length === 0) {
+    return { error: 'Choose which store(s) this user has access to.' };
+  }
   if (password && password.length < 8) {
     return { error: 'Password must be at least 8 characters.' };
   }
+
+  const finalAssignedStores = Array.from(new Set([...assignedStoreIds, ...(storeId ? [storeId] : [])]));
 
   try {
     await requireAdmin();
     const d = await db();
     const t = await requireTenant();
+    const permsJson = JSON.stringify(departmentGroup === 'admin' ? ['all'] : permissions);
+    const assignedStoresJson = JSON.stringify(allStoresAccess ? [] : finalAssignedStores);
+
     if (password) {
       await d.query(
-        `update users set username = $3, display_name = $4, role = $5, store_id = $6,
-                          password_hash = $7, permissions = $8
+        `update users
+            set username = $3, display_name = $4, role = $5, store_id = $6,
+                password_hash = $7, permissions = $8, department_group = $9,
+                all_stores_access = $10, assigned_store_ids = $11, document_visibility = $12
           where tenant_id = $1 and id = $2`,
         [
           t.id,
@@ -100,14 +125,21 @@ export async function updateUser(_prev: UserFormState, formData: FormData): Prom
           username,
           displayName,
           role,
-          role === 'store_user' ? storeId : null,
+          storeId,
           hashPassword(password),
-          JSON.stringify(role === 'store_user' ? permissions : []),
+          permsJson,
+          departmentGroup,
+          allStoresAccess,
+          assignedStoresJson,
+          documentVisibility,
         ],
       );
     } else {
       await d.query(
-        `update users set username = $3, display_name = $4, role = $5, store_id = $6, permissions = $7
+        `update users
+            set username = $3, display_name = $4, role = $5, store_id = $6,
+                permissions = $7, department_group = $8, all_stores_access = $9,
+                assigned_store_ids = $10, document_visibility = $11
           where tenant_id = $1 and id = $2`,
         [
           t.id,
@@ -115,8 +147,12 @@ export async function updateUser(_prev: UserFormState, formData: FormData): Prom
           username,
           displayName,
           role,
-          role === 'store_user' ? storeId : null,
-          JSON.stringify(role === 'store_user' ? permissions : []),
+          storeId,
+          permsJson,
+          departmentGroup,
+          allStoresAccess,
+          assignedStoresJson,
+          documentVisibility,
         ],
       );
     }

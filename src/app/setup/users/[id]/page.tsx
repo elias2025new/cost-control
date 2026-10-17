@@ -50,6 +50,10 @@ export default async function SetupUserDetail({ params }: { params: Promise<{ id
             role={user.role}
             storeId={user.store_id}
             permissions={user.permissions || []}
+            departmentGroup={user.department_group}
+            allStoresAccess={user.all_stores_access}
+            assignedStoreIds={user.assigned_store_ids || []}
+            documentVisibility={user.document_visibility}
             stores={stores}
           />
         </Card>

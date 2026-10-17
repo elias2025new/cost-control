@@ -120,11 +120,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             />
 
             <NavLink
-              href="/import"
+              href="/waste"
+              icon="🗑"
+              label="Waste & Leakage"
+            />
+
+            <NavLink
+              href="/sales/eod"
               icon="↧"
-              label="Sales import"
-              disabled={!isAdmin}
-              disabledReason="Only an administrator can open this."
+              label="EOD Sales Upload"
+              disabled={!isAdmin && !hasPermission('sales_eod_upload') && !hasPermission('sales_view')}
+              disabledReason="You do not have permission to access sales imports."
             />
 
             <NavLink
@@ -133,6 +139,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               label="Stock ledger"
               disabled={!hasPermission('ledger_view')}
               disabledReason="You do not have permission to view the ledger."
+            />
+
+            <NavLink
+              href="/production"
+              icon="🔪"
+              label="Production & Butchery"
+              disabled={!isAdmin && !hasPermission('production_batch') && !hasPermission('butcher_test')}
+              disabledReason="You do not have permission to access production."
             />
 
             <NavLink
@@ -155,6 +169,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               label="Variance"
               disabled={!hasPermission('variance_view')}
               disabledReason="You do not have permission to view variance reports."
+            />
+
+            <NavDropdown
+              label="MC Analytics"
+              icon="📊"
+              links={[
+                { href: '/reports/cost-control', label: 'Executive Cost Control', icon: '📈' },
+                { href: '/reports/cost-summary', label: 'F&B Cost Reconciliation', icon: '📑' },
+                { href: '/reports/menu-engineering', label: 'Menu Engineering (4-Q)', icon: '⭐' },
+                { href: '/dashboard', label: 'Overview Dashboard', icon: '🗠' },
+              ]}
+              disabled={!isAdmin && !hasPermission('reports_view') && !hasPermission('variance_view')}
+              disabledReason="You do not have permission to view reports."
             />
           </nav>
         </header>

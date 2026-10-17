@@ -12,6 +12,7 @@
 
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+import { randomBytes, scryptSync } from 'node:crypto';
 import type { Database, Tx } from '../../src/lib/db';
 import { connect } from '../../src/lib/db';
 import { migrate } from '../../src/lib/migrate';
@@ -25,11 +26,15 @@ import {
   FREE_ARTICLE_MAPPINGS,
   GENERIC_ARTICLE_CODES,
   ITEMS,
+  ITEM_CUSTOM_CONVERSIONS,
   MENU_ITEMS,
   MENU_RECIPES,
   RECIPE_EFFECTIVE_FROM,
+  SEED_STAFF_USERS,
   STORES,
   SUB_RECIPES,
+  SUPPLIERS,
+  SUPPLIER_PRICES,
   TENANT,
   TEST_ARTICLE_CODES,
   type SeedRecipe,
@@ -47,6 +52,7 @@ export interface SeedResult {
   itemIds: Record<string, string>;
   menuItemIds: Record<string, string>;
   recipeIds: Record<string, string>;
+  supplierIds: Record<string, string>;
   articlesSeeded: number;
 }
 
@@ -64,12 +70,16 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
     // ---- tenant, branch, stores -------------------------------------------
     const tenantId = await one(
       tx,
-      `insert into tenants (code, name) values ($1, $2) returning id`,
+      `insert into tenants (code, name) values ($1, $2)
+       on conflict (code) do update set name = excluded.name
+       returning id`,
       [TENANT.code, TENANT.name],
     );
     const branchId = await one(
       tx,
-      `insert into branches (tenant_id, code, name) values ($1, $2, $3) returning id`,
+      `insert into branches (tenant_id, code, name) values ($1, $2, $3)
+       on conflict (tenant_id, code) do update set name = excluded.name
+       returning id`,
       [tenantId, BRANCH.code, BRANCH.name],
     );
 
@@ -78,14 +88,30 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
       storeIds[s.code] = await one(
         tx,
         `insert into stores (tenant_id, branch_id, code, name, kind)
-         values ($1, $2, $3, $4, $5) returning id`,
+         values ($1, $2, $3, $4, $5)
+         on conflict (tenant_id, code) do update set name = excluded.name, kind = excluded.kind
+         returning id`,
         [tenantId, branchId, s.code, s.name, s.kind],
       );
     }
-    log(`  tenant, branch, ${STORES.length} stores`);
+
+    // Link satellite outlets to Central Store (MAIN) as default fulfilling warehouse
+    if (storeIds['MAIN']) {
+      for (const [code, id] of Object.entries(storeIds)) {
+        if (code !== 'MAIN') {
+          await tx.query(
+            `update stores set default_fulfilling_store_id = $1 where id = $2`,
+            [storeIds['MAIN'], id],
+          );
+        }
+      }
+    }
+    log(`  tenant, branch, ${STORES.length} stores (Central Store hierarchy established)`);
 
     if (opts.bare) {
       log('  bare mode — skipping items, recipes, POS articles, and opening stock');
+      await seedStaffUsers(tx, tenantId, storeIds);
+      log(`  ${SEED_STAFF_USERS.length} staff accounts seeded with HMC role-based permissions`);
       return {
         tenantId,
         branchId,
@@ -93,6 +119,7 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
         itemIds: {},
         menuItemIds: {},
         recipeIds: {},
+        supplierIds: {},
         articlesSeeded: 0,
       };
     }
@@ -112,9 +139,19 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
     for (const i of ITEMS) {
       itemIds[i.code] = await one(
         tx,
-        `insert into items (tenant_id, code, name, category_id, uom, is_sample)
-         values ($1, $2, $3, $4, $5, true) returning id`,
-        [tenantId, i.code, i.name, categoryIds[i.category], i.uom],
+        `insert into items (tenant_id, code, name, category_id, uom, purchase_uom, pack_factor, loss_percent, abc_class, is_sample)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, $9, true) returning id`,
+        [
+          tenantId,
+          i.code,
+          i.name,
+          categoryIds[i.category],
+          i.uom,
+          i.purchaseUom ?? i.uom,
+          i.packFactor ?? '1',
+          i.lossPercent ?? '0',
+          i.abcClass ?? null,
+        ],
       );
       // The first cost version. Changing a cost later goes through
       // set_item_cost(), which closes this one rather than editing it.
@@ -136,9 +173,86 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
            values ($1, $2, $3, $4, $5)`,
           [tenantId, storeIds[i.outlet], itemIds[i.code], i.min ?? '0', i.max ?? '0'],
         );
+
+        // Also seed Central Store buffer Par levels (2x min, 3x max) for warehouse replenishment
+        if (storeIds['MAIN']) {
+          const mainMin = i.min ? String(Number(i.min) * 2) : '0';
+          const mainMax = i.max ? String(Number(i.max) * 3) : '0';
+          await tx.query(
+            `insert into store_item_levels (tenant_id, store_id, item_id, min_qty, max_qty)
+             values ($1, $2, $3, $4, $5)
+             on conflict (tenant_id, store_id, item_id) do nothing`,
+            [tenantId, storeIds['MAIN'], itemIds[i.code], mainMin, mainMax],
+          );
+        }
+
+        // Seed Prep Kitchen Par levels for prep goods and baking ingredients
+        if (
+          storeIds['PREP'] &&
+          ['RM-BUTTER', 'RM-TEFF', 'RM-SUGAR', 'RM-SALT', 'RM-GINGER', 'RM-GARLIC', 'RM-KORARIMA', 'RM-BESOBELA'].includes(i.code)
+        ) {
+          await tx.query(
+            `insert into store_item_levels (tenant_id, store_id, item_id, min_qty, max_qty)
+             values ($1, $2, $3, $4, $5)
+             on conflict (tenant_id, store_id, item_id) do nothing`,
+            [tenantId, storeIds['PREP'], itemIds[i.code], i.min ?? '0', i.max ?? '0'],
+          );
+        }
       }
     }
-    log(`  ${CATEGORIES.length} categories, ${ITEMS.length} items with costed versions`);
+
+    // Seed HMC item custom unit conversions (density, bottle ml, etc.)
+    for (const conv of ITEM_CUSTOM_CONVERSIONS) {
+      const itemId = itemIds[conv.itemCode];
+      if (itemId) {
+        await tx.query(
+          `insert into item_unit_conversions (tenant_id, item_id, from_uom, to_uom, factor, note)
+           values ($1, $2, $3, $4, $5, $6)
+           on conflict (tenant_id, item_id, from_uom, to_uom) do nothing`,
+          [tenantId, itemId, conv.fromUom, conv.toUom, conv.factor, conv.note ?? null],
+        );
+      }
+    }
+    log(`  ${CATEGORIES.length} categories, ${ITEMS.length} items with HMC dual units & shrinkage`);
+
+    // ---- suppliers and price catalogs (HMC LIEFER / LIEFERART) -------------
+    const supplierIds: Record<string, string> = {};
+    for (const sup of SUPPLIERS) {
+      supplierIds[sup.code] = await one(
+        tx,
+        `insert into suppliers (tenant_id, code, name, contact)
+         values ($1, $2, $3, $4)
+         on conflict (tenant_id, code) do update set name = excluded.name
+         returning id`,
+        [tenantId, sup.code, sup.name, sup.contact ?? null],
+      );
+    }
+
+    for (const sp of SUPPLIER_PRICES) {
+      const sId = supplierIds[sp.supplierCode];
+      const iId = itemIds[sp.itemCode];
+      if (sId && iId) {
+        await tx.query(
+          `insert into supplier_item_prices
+             (tenant_id, supplier_id, item_id, purchase_uom, pack_factor, contract_price,
+              min_order_qty, lead_time_days, is_preferred)
+           values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           on conflict (tenant_id, supplier_id, item_id, purchase_uom) do nothing`,
+          [
+            tenantId,
+            sId,
+            iId,
+            sp.purchaseUom,
+            sp.packFactor,
+            sp.contractPrice,
+            sp.minOrderQty ?? '1.0',
+            sp.leadTimeDays ?? 1,
+            sp.isPreferred ?? false,
+          ],
+        );
+      }
+    }
+    log(`  ${SUPPLIERS.length} suppliers, ${SUPPLIER_PRICES.length} contract price catalogs`);
 
     // ---- menu items --------------------------------------------------------
     const menuItemIds: Record<string, string> = {};
@@ -264,6 +378,10 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
     }
     log(`  ${movements} opening stock movements`);
 
+    // ---- staff users & HMC role-based access -------------------------------
+    await seedStaffUsers(tx, tenantId, storeIds);
+    log(`  ${SEED_STAFF_USERS.length} staff accounts seeded with HMC role-based permissions`);
+
     return {
       tenantId,
       branchId,
@@ -271,12 +389,57 @@ export async function seed(db: Database, opts: { quiet?: boolean; bare?: boolean
       itemIds,
       menuItemIds,
       recipeIds,
+      supplierIds,
       articlesSeeded,
     };
   });
 }
 
 /* ------------------------------------------------------------------ helpers */
+
+async function seedStaffUsers(tx: Tx, tenantId: string, storeIds: Record<string, string>) {
+  for (const u of SEED_STAFF_USERS) {
+    const storeId = u.storeCode && storeIds[u.storeCode] ? storeIds[u.storeCode] : null;
+    const assignedStoreIds = storeId ? [storeId] : [];
+    const passHash = hashPasswordSeed(u.password);
+
+    await tx.query(
+      `insert into users
+         (tenant_id, username, password_hash, display_name, role, store_id,
+          permissions, department_group, all_stores_access, assigned_store_ids, document_visibility)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       on conflict (tenant_id, username) do update set
+         password_hash = excluded.password_hash,
+         display_name = excluded.display_name,
+         role = excluded.role,
+         store_id = excluded.store_id,
+         permissions = excluded.permissions,
+         department_group = excluded.department_group,
+         all_stores_access = excluded.all_stores_access,
+         assigned_store_ids = excluded.assigned_store_ids,
+         document_visibility = excluded.document_visibility`,
+      [
+        tenantId,
+        u.username,
+        passHash,
+        u.displayName,
+        u.role,
+        storeId,
+        JSON.stringify(u.permissions),
+        u.departmentGroup,
+        u.allStoresAccess ?? false,
+        JSON.stringify(u.allStoresAccess ? [] : assignedStoreIds),
+        u.documentVisibility ?? 'department',
+      ],
+    );
+  }
+}
+
+function hashPasswordSeed(password: string): string {
+  const salt = randomBytes(16).toString('hex');
+  const hash = scryptSync(password, salt, 64).toString('hex');
+  return `${salt}:${hash}`;
+}
 
 async function one(tx: Tx, sql: string, params: unknown[]): Promise<string> {
   const { rows } = await tx.query<{ id: string }>(sql, params);
