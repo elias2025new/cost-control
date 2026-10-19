@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { db as getDb } from '../../../lib/server-db';
 import { requireTenant, requireUser } from '../../../lib/queries';
 import { NewSupplierForm } from './NewSupplierForm';
-import { toggleSupplierAction } from './actions';
+import { toggleSupplierAction, deleteSupplierAction } from './actions';
 
 export default async function SuppliersSetupPage() {
   const user = await requireUser();
@@ -99,16 +99,29 @@ export default async function SuppliersSetupPage() {
                   </span>
                 </td>
                 <td className="px-4 py-2.5 text-right">
-                  <form action={toggleSupplierAction}>
-                    <input type="hidden" name="supplierId" value={s.id} />
-                    <input type="hidden" name="isActive" value={String(s.is_active)} />
-                    <button
-                      type="submit"
-                      className="text-[12px] text-gray-500 hover:text-red-600 hover:underline cursor-pointer"
-                    >
-                      {s.is_active ? 'Deactivate' : 'Reactivate'}
-                    </button>
-                  </form>
+                  <div className="flex items-center justify-end gap-3">
+                    <form action={toggleSupplierAction}>
+                      <input type="hidden" name="supplierId" value={s.id} />
+                      <input type="hidden" name="isActive" value={String(s.is_active)} />
+                      <button
+                        type="submit"
+                        className="text-[12px] text-gray-500 hover:text-gray-800 hover:underline cursor-pointer"
+                      >
+                        {s.is_active ? 'Deactivate' : 'Reactivate'}
+                      </button>
+                    </form>
+                    {Number(s.purchase_count) === 0 && (
+                      <form action={deleteSupplierAction}>
+                        <input type="hidden" name="supplierId" value={s.id} />
+                        <button
+                          type="submit"
+                          className="text-[12px] text-red-500 hover:text-red-700 hover:underline cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

@@ -44,6 +44,38 @@ export async function toggleSupplierAction(formData: FormData) {
   revalidatePath('/setup/suppliers');
 }
 
+export async function deleteSupplierAction(formData: FormData) {
+  const user = await requireUser();
+  if (user.role !== 'admin') throw new Error('Only administrators can delete suppliers.');
+
+  const tenant = await requireTenant();
+  const supplierId = formData.get('supplierId')?.toString();
+  if (!supplierId) throw new Error('Missing supplier ID.');
+
+  const database = await db();
+
+  const { rows: usage } = await database.query<{ purchases: string; orders: string }>(
+    `select 
+       (select count(*)::text from purchases where supplier_id = $1 and tenant_id = $2) as purchases,
+       (select count(*)::text from purchase_orders where supplier_id = $1 and tenant_id = $2) as orders`,
+    [supplierId, tenant.id]
+  );
+
+  const purchaseCount = Number(usage[0]?.purchases || 0);
+  const orderCount = Number(usage[0]?.orders || 0);
+
+  if (purchaseCount > 0 || orderCount > 0) {
+    throw new Error(
+      `Cannot delete this supplier because they have ${purchaseCount} purchase(s) and ${orderCount} order(s). Deactivate them instead to preserve your audit trail.`
+    );
+  }
+
+  await database.query(`delete from supplier_item_prices where supplier_id = $1 and tenant_id = $2`, [supplierId, tenant.id]);
+  await database.query(`delete from suppliers where id = $1 and tenant_id = $2`, [supplierId, tenant.id]);
+
+  revalidatePath('/setup/suppliers');
+}
+
 export async function addSupplierPriceAction(formData: FormData) {
   const user = await requireUser();
   if (user.role !== 'admin' && !user.permissions?.includes('po_create')) {
