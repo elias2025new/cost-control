@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Prime Hospitality — F&B Cost Control Plain English Manual & Crash Course</title>
+  <title>Prime Hospitality — Complete Role-by-Role F&B Cost Control Manual & Setup Guide</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -30,23 +30,23 @@
       font-family: var(--font-sans);
       color: var(--ink-800);
       background-color: #ffffff;
-      line-height: 1.65;
-      font-size: 14px;
+      line-height: 1.55;
+      font-size: 13px;
       margin: 0;
       padding: 0;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 940px;
       margin: 0 auto;
-      padding: 35px 30px;
+      padding: 28px 24px;
     }
 
     /* Cover / Header */
     .manual-header {
       border-bottom: 2px solid var(--ink-200);
-      padding-bottom: 24px;
-      margin-bottom: 35px;
+      padding-bottom: 18px;
+      margin-bottom: 26px;
     }
     .badge-top {
       display: inline-block;
@@ -59,59 +59,76 @@
       background: var(--brand-light);
       padding: 4px 10px;
       border-radius: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       border: 1px solid #bfdbfe;
     }
     h1 {
-      font-size: 30px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--ink-900);
       line-height: 1.25;
-      margin: 0 0 10px 0;
+      margin: 0 0 6px 0;
     }
     .subtitle {
-      font-size: 15px;
+      font-size: 14px;
       color: var(--ink-500);
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     /* Headings */
     h2 {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--ink-900);
       border-bottom: 1.5px solid var(--ink-200);
-      padding-bottom: 8px;
-      margin-top: 40px;
-      margin-bottom: 16px;
+      padding-bottom: 6px;
+      margin-top: 32px;
+      margin-bottom: 12px;
     }
+    .role-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 6px;
+    }
+    .role-gm { background: #dbeafe; color: #1e3a8a; }
+    .role-ctrl { background: #fef3c7; color: #92400e; }
+    .role-store { background: #d1fae5; color: #065f46; }
+    .role-chef { background: #fee2e2; color: #991b1b; }
+    .role-bar { background: #f3e8ff; color: #6b21a8; }
+    .role-purch { background: #e0f2fe; color: #0369a1; }
+
     h3 {
-      font-size: 15.5px;
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--brand);
-      margin-top: 24px;
-      margin-bottom: 8px;
+      margin-top: 20px;
+      margin-bottom: 6px;
     }
     h4 {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--ink-900);
-      margin-top: 14px;
-      margin-bottom: 6px;
+      margin-top: 12px;
+      margin-bottom: 4px;
     }
 
     p {
-      margin: 0 0 12px 0;
+      margin: 0 0 8px 0;
     }
 
-    /* Callout Boxes */
+    /* Callouts */
     .callout {
       border-radius: 8px;
-      padding: 14px 18px;
-      margin: 16px 0;
-      font-size: 13.5px;
-      line-height: 1.6;
+      padding: 11px 15px;
+      margin: 12px 0;
+      font-size: 12.5px;
+      line-height: 1.5;
     }
     .callout-rule {
       background: var(--brand-light);
@@ -130,30 +147,30 @@
     }
     .callout-title {
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    /* Formulas & Simple Math Boxes */
+    /* Formulas & Boxes */
     .formula-box {
       background: var(--ink-100);
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 16px;
-      margin: 16px 0;
-      font-size: 13px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      font-size: 12px;
       color: var(--ink-900);
-      line-height: 1.7;
+      line-height: 1.6;
     }
     .formula-box strong {
       color: var(--brand);
-      font-size: 13.5px;
+      font-size: 12.5px;
     }
     .formula-step {
-      margin-top: 6px;
-      padding-left: 12px;
+      margin-top: 4px;
+      padding-left: 10px;
       border-left: 2px solid #94a3b8;
     }
 
@@ -161,12 +178,12 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 18px 0;
-      font-size: 13px;
+      margin: 12px 0;
+      font-size: 12px;
     }
     th, td {
       border: 1px solid var(--ink-200);
-      padding: 9px 12px;
+      padding: 7px 9px;
       text-align: left;
       vertical-align: top;
     }
@@ -174,7 +191,7 @@
       background-color: #f8fafc;
       font-weight: 600;
       color: var(--ink-900);
-      font-size: 11.5px;
+      font-size: 10.5px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -184,31 +201,31 @@
 
     /* Lists */
     ol, ul {
-      margin: 0 0 14px 0;
-      padding-left: 22px;
+      margin: 0 0 10px 0;
+      padding-left: 18px;
     }
     li {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     /* Badges & Code */
     code {
       font-family: var(--font-mono);
       background: var(--ink-100);
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--ink-900);
       border: 1px solid #e2e8f0;
     }
     .tag {
       display: inline-block;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      padding: 2px 7px;
+      padding: 2px 5px;
       border-radius: 4px;
-      margin-right: 4px;
+      margin-right: 2px;
     }
     .tag-blue { background: #dbeafe; color: #1e40af; }
     .tag-green { background: #d1fae5; color: #065f46; }
@@ -217,7 +234,7 @@
 
     /* Page Breaks for PDF */
     @media print {
-      body { font-size: 11.5px; }
+      body { font-size: 10.5px; }
       .container { max-width: 100%; padding: 0; }
       .page-break { page-break-before: always; }
       h2 { page-break-after: avoid; }
@@ -233,452 +250,616 @@
       <div class="badge-top">Prime Hospitality Business Group · Siyonat Branch</div>
       <h1>Hotel Food &amp; Beverage Cost Control</h1>
       <p class="subtitle">
-        <strong>The Plain English Guide &amp; Daily Crash Course</strong><br/>
-        How to Stop Food &amp; Drink Waste, Catch Mistakes, and Protect Hotel Profits
+        <strong>The Plain English Role-by-Role Operational Handbook &amp; Setup Guide</strong><br/>
+        How to Set Up an Empty System from Scratch and Exactly What Each Staff Role Does Every Day
       </p>
     </div>
 
-    <!-- MODULE 1 -->
-    <h2>Module 1: Why Food &amp; Drink Cost Control is Different (The Basics)</h2>
+    <!-- MODULE 1: THE CORE BASICS -->
+    <h2>Module 1: The Core Philosophy (Why Hotel Cost Control is Different)</h2>
     <p>
-      In a normal supermarket, inventory is easy. If the owner buys 100 bottles of shampoo for 200 Birr each and sells them for 300 Birr, counting stock is simple: every bottle sold removes exactly 200 Birr from the storeroom shelf.
+      In a supermarket, if you buy 100 bottles of shampoo for 200 Birr and sell them for 300 Birr, counting stock is simple: every sale removes exactly 200 Birr from the storeroom.
     </p>
     <p>
-      <strong>A hotel kitchen and bar are completely different because food changes shape:</strong>
+      <strong>A hotel kitchen and bar are completely different because food transforms:</strong>
+      <br/>You buy a whole beef carcass. The kitchen cuts off bones and fat, slices steaks for <em>Special Tibs</em>, minces meat for <em>Kitfo</em>, cooks it with onions and spiced butter (<em>Niter Kibbeh</em>), serves it on <em>Injera</em>, feeds staff on duty, comps meals to VIPs, and sells dishes across 170 buttons on the CNet cash registers.
     </p>
-    <ul>
-      <li>You buy a whole cow carcass or raw beef leg from the butcher.</li>
-      <li>The kitchen trims off fat and bones, cuts the prime meat into cubes for <em>Special Tibs</em>, and minces the rest for <em>Kitfo</em>.</li>
-      <li>The cook seasons the meat with onions and spiced butter (<em>Niter Kibbeh</em>), cooks it on a hot stove, and serves it on large rolls of <em>Injera</em>.</li>
-      <li>During the day, cooks eat their staff lunch, a manager gives a free plate to a VIP guest, and waiters sell the rest on 170 different buttons on the CNet cash registers.</li>
-    </ul>
 
     <div class="callout callout-leak">
       <div class="callout-title">The 4 Big Holes Where Hotel Money Disappears</div>
-      <ol style="margin: 0; padding-left: 20px;">
-        <li><strong>Delivery Tricks &amp; Sneaky Prices:</strong> The delivery truck brings 47 kg of meat instead of the 50 kg you ordered. Or worse, the vendor quietly charges 1,500 Birr on the paper bill instead of the 1,400 Birr you agreed to pay.</li>
-        <li><strong>Cooking by Guesswork (Heavy Hands):</strong> The menu recipe says 200 grams of beef per order. But the cook scoops by hand instead of using a scale and serves 280 grams. That gives away 40% of your meat for free on every single plate!</li>
-        <li><strong>Unrecorded Trash &amp; Secret Freebies:</strong> Meat spoils in the fridge, an order gets burnt, or someone feeds their friend without a receipt. If nobody writes it down, management cannot tell the difference between bad cooking and stealing.</li>
-        <li><strong>Bar Stealing &amp; Free Pouring:</strong> A bartender pours double shots to get bigger tips, or takes cash from a customer and puts it in their pocket without ringing it into the cash register.</li>
+      <ol style="margin: 0; padding-left: 18px;">
+        <li><strong>Delivery Tricks &amp; Sneaky Prices:</strong> Vendor delivers 47 kg instead of 50 kg, or quietly raises invoice price from 1,400 to 1,500 Birr.</li>
+        <li><strong>Kitchen Eyeballing (Heavy Hands):</strong> Recipe calls for 200g of meat, but cook serves 280g by hand. That wastes 40% of your meat for free!</li>
+        <li><strong>Unrecorded Trash &amp; Secret Comps:</strong> Burnt meat or spoiled milk thrown away without writing it down. If unrecorded, management thinks it was stolen.</li>
+        <li><strong>Bar Stealing &amp; Free Pouring:</strong> Bartenders pouring extra-heavy drinks for tips or taking cash without ringing it on the till.</li>
       </ol>
     </div>
 
-    <h3>1.1 How the Math Works in Plain Words</h3>
-    <p>
-      Cost control tracks exactly what entered the building, what was sold, and what is still on the shelves. Here is the universal formula written in everyday words:
-    </p>
-
     <div class="formula-box">
-      <strong>Step 1: How much stock did we actually use up?</strong><br/>
+      <strong>The Plain English Cost Formula:</strong><br/>
       <div class="formula-step">
-        &nbsp;&nbsp;&nbsp;&nbsp;What was on the shelves at the start of the week (Opening Stock)<br/>
-        &nbsp;&nbsp;+ What we bought from suppliers (New Deliveries)<br/>
-        &nbsp;&nbsp;+ Items transferred in from another store<br/>
-        &nbsp;&nbsp;- Items transferred out to another store<br/>
-        &nbsp;&nbsp;- What is still on the shelves at the end (Closing Stock)<br/>
-        &nbsp;&nbsp;= <strong>Total Stock Used (Gross Consumption)</strong>
+        • <strong>Stock Used Up</strong> = Opening Stock + New Deliveries + Transfers In - Transfers Out - Ending Stock<br/>
+        • <strong>Real Food Cost</strong> = Stock Used Up - Staff Duty Meals - Free VIP Promotions<br/>
+        • <strong>Food Cost %</strong> = (Real Food Cost &divide; Food Sales on Cash Register) &times; 100
       </div>
       <br/>
-      <strong>Step 2: What was the real cost of food sold to guests?</strong><br/>
-      <div class="formula-step">
-        &nbsp;&nbsp;&nbsp;&nbsp;Total Stock Used<br/>
-        &nbsp;&nbsp;- Staff Duty Meals (this is an employee cost, not food waste)<br/>
-        &nbsp;&nbsp;- Free VIP / Manager Comps (this is a marketing cost)<br/>
-        &nbsp;&nbsp;= <strong>True Cost of Food &amp; Drinks Sold</strong>
-      </div>
-      <br/>
-      <strong>Step 3: What is our Cost %?</strong><br/>
-      <div class="formula-step">
-        &nbsp;&nbsp;<strong>Cost %</strong> = (True Cost &divide; Sales on Cash Register) &times; 100
-      </div>
+      <strong>Golden Rule: Never Mix Food and Drinks Together!</strong><br/>
+      Beverage Cost target is <strong>18% – 22%</strong> (very high profit). Food Cost target is <strong>30% – 34%</strong> (perishable, high prep). Mixing them hides kitchen theft behind beer sales!
     </div>
 
-    <div class="callout callout-tip">
-      <div class="callout-title">What Does "30% Food Cost" Actually Mean in Birr?</div>
-      It means: <strong>For every 100 Birr a guest pays for a meal, 30 Birr went to buy raw ingredients.</strong><br/>
-      The remaining <strong>70 Birr</strong> is what pays staff salaries, hotel electricity, water, rent, tax, and hotel profit. If your Food Cost climbs to 45%, the hotel loses money!
-    </div>
-
-    <div class="callout callout-rule">
-      <div class="callout-title">The Golden Law: Never Mix Food and Drink Numbers Together!</div>
-      Food Cost % and Drink Cost % must <strong>never</strong> be blended into one combined number.
-      <ul>
-        <li><strong>Drinks Target: 18% – 22%</strong> (Very cheap to serve: open a beer bottle or pour a glass of whiskey).</li>
-        <li><strong>Food Target: 30% – 34%</strong> (Costs more: raw meat shrinks, vegetables spoil, cooks trim bones).</li>
-      </ul>
-      If you combine them into one number, a busy bar selling lots of beer will hide thousands of Birr of meat theft in the kitchen! Always keep Food and Drinks separate.
-    </div>
-
-    <h3>1.2 How the Computer Calculates Average Price (Fair Moving Average)</h3>
-    <p>
-      Food prices in Addis Ababa change every week. If beef costs 1,200 Birr today and 1,400 Birr next week, what does a plate of tibs cost? The system uses the <strong>Fair Moving Average</strong>:
-    </p>
-    <ul>
-      <li>You have 10 kg of beef in the freezer bought at <strong>1,200 Birr/kg</strong> (Value = 12,000 Birr).</li>
-      <li>The delivery truck arrives with 10 kg more at <strong>1,400 Birr/kg</strong> (Value = 14,000 Birr).</li>
-      <li>You now have 20 kg total, worth 26,000 Birr.</li>
-      <li>The computer calculates the new fair price: <code>26,000 Birr &divide; 20 kg = 1,300 Birr per kg</code>.</li>
-      <li>From that exact moment, whenever a cook prepares a dish, the system deducts the meat at 1,300 Birr. Simple, automatic, and fair!</li>
-    </ul>
-
-    <!-- MODULE 2 -->
+    <!-- ROLE 1: GENERAL MANAGER & ADMIN -->
     <div class="page-break"></div>
-    <h2>Module 2: Setting Up Your System Step-by-Step (Clean Slate)</h2>
+    <h2><span class="role-badge role-gm">ROLE 1</span> General Manager &amp; System Administrator (Day 0 Clean Slate Setup &amp; Executive Oversight)</h2>
     <p>
-      When you start with a clean slate (zero sample items), you enter your real hotel data in the <strong>Setup</strong> menu. Here is how each screen works:
+      When the system is completely empty (after running <code>npm run db:bare</code>), the <strong>General Manager / Admin</strong> sets up the foundation. Here are the <strong>12 exact setup steps</strong> with ready-to-enter real data:
     </p>
 
-    <h3>2.1 Stores &amp; Outlets (<code>/setup/stores</code>)</h3>
-    <p>
-      A "Store" is any room where food, drinks, or supplies are kept. The system divides Prime Hospitality into 4 clear rooms:
-    </p>
+    <h3>Step 1: Create Staff Users (<code>/setup/users</code>)</h3>
+    <p>Create login accounts for the other team members and assign them to their stores:</p>
     <table>
       <thead>
         <tr>
-          <th>Store Code</th>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Role Dropdown</th>
+          <th>Assigned Store</th>
+          <th>What they do</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>admin</code></td>
+          <td>General Manager / Admin</td>
+          <td><span class="tag tag-blue">admin</span></td>
+          <td><code>MAIN</code></td>
+          <td>Controls master setup, reviews overall profit and executive reports.</td>
+        </tr>
+        <tr>
+          <td><code>controller</code></td>
+          <td>Cost Controller</td>
+          <td><span class="tag tag-amber">controller</span></td>
+          <td><code>MAIN</code></td>
+          <td>Daily CNet sales upload, approves price variances and waste logs.</td>
+        </tr>
+        <tr>
+          <td><code>storekeeper</code></td>
+          <td>Central Storekeeper</td>
+          <td><span class="tag tag-green">storekeeper</span></td>
+          <td><code>MAIN</code></td>
+          <td>Weighs morning deliveries (GRN), issues goods to kitchen/bar.</td>
+        </tr>
+        <tr>
+          <td><code>chef</code></td>
+          <td>Executive Chef</td>
+          <td><span class="tag tag-red">chef</span></td>
+          <td><code>KITCHEN</code></td>
+          <td>1-click par food orders, meat butcher tests, prep cooking, waste logging.</td>
+        </tr>
+        <tr>
+          <td><code>bar</code></td>
+          <td>Bar Supervisor</td>
+          <td><span class="tag tag-blue">bar</span></td>
+          <td><code>BAR</code></td>
+          <td>Orders drinks from store, counts liquor bottles, logs broken bottles.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Step 2: Add Hotel Branch (<code>/setup/branches</code>)</h3>
+    <p>Enter: Code = <code>SIYONAT</code> | Name = <strong>Siyonat Hotel Branch, Bole, Addis Ababa</strong>.</p>
+
+    <h3>Step 3: Create Stores &amp; Outlets (<code>/setup/stores</code>)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
           <th>Store Name</th>
-          <th>What is it?</th>
-          <th>Where does it get its stock?</th>
+          <th>Kind</th>
+          <th>Supply Route (Where it gets stock)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><code>MAIN</code></td>
           <td>Central Store (Warehouse)</td>
-          <td>The main receiving warehouse</td>
-          <td>Direct from delivery trucks (Addis Abattoir, BGI, Merkato suppliers).</td>
+          <td>Warehouse</td>
+          <td>Direct from external suppliers (Abattoir, BGI, Merkato).</td>
         </tr>
         <tr>
           <td><code>KITCHEN</code></td>
           <td>Main Kitchen</td>
-          <td>Where cooks prepare guest meals</td>
-          <td>Receives stock from <code>MAIN</code> using internal transfer requests.</td>
+          <td>Kitchen</td>
+          <td>Supplied by Central Store (<code>MAIN</code>) via Par Requisitions.</td>
         </tr>
         <tr>
           <td><code>BAR</code></td>
-          <td>Main Bar</td>
-          <td>Where bartenders serve drinks</td>
-          <td>Receives crates of beer, wine, and liquor from <code>MAIN</code>.</td>
+          <td>Main Bar &amp; Lounge</td>
+          <td>Bar</td>
+          <td>Supplied by Central Store (<code>MAIN</code>) via Par Requisitions.</td>
         </tr>
         <tr>
           <td><code>PREP</code></td>
           <td>Prep &amp; Pastry Kitchen</td>
-          <td>Large batch cooking area</td>
-          <td>Takes raw flour and butter from <code>MAIN</code> to bake Injera and prep sauces.</td>
+          <td>Prep Station</td>
+          <td>Takes teff &amp; butter from <code>MAIN</code>, bakes Injera and makes sauces.</td>
         </tr>
       </tbody>
     </table>
 
-    <h3>2.2 Categories (<code>/setup/categories</code>)</h3>
-    <p>
-      Categories group similar items together. Every category belongs to one of three kinds:
-    </p>
-    <ul>
-      <li><strong>Food:</strong> Fresh Meat, Vegetables &amp; Fruits, Dairy &amp; Eggs, Grains &amp; Flour, Spices &amp; Oils.</li>
-      <li><strong>Beverage:</strong> Bottled Beer &amp; Draught, Soft Drinks &amp; Water, Wine &amp; Spirits, Coffee &amp; Tea.</li>
-      <li><strong>Supplies:</strong> Takeaway boxes, napkins, straws, bar toothpicks, kitchen cleaning chemicals.</li>
-    </ul>
-
-    <h3>2.3 Ingredients: How You Buy It vs. How You Cook It (<code>/setup/items</code>)</h3>
-    <p>
-      This is where many hotels make costly mistakes. You rarely buy food in the same size you cook it. The system solves this with 3 simple fields:
-    </p>
+    <h3>Step 4: Register Approved Suppliers &amp; Agreed Prices (<code>/setup/suppliers</code>)</h3>
     <table>
       <thead>
         <tr>
-          <th>Field Name</th>
-          <th>What it means in plain words</th>
-          <th>Real Example</th>
+          <th>Supplier Code &amp; Name</th>
+          <th>Items Supplied &amp; Agreed Contract Price</th>
+          <th>VAT %</th>
+          <th>MOQ &amp; Lead Time</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Inventory Unit (Kitchen Unit)</strong></td>
-          <td>How the kitchen or bar uses, weighs, or counts the item.</td>
-          <td><code>Kg</code> for Teff; <code>Bottle</code> for Beer; <code>Liter</code> for Milk.</td>
-        </tr>
-        <tr>
-          <td><strong>Purchase Unit (Buying Unit)</strong></td>
-          <td>How the supplier packs and delivers the item.</td>
-          <td><code>Bag</code> (50 kg); <code>Crate</code> (24 bottles); <code>Box</code> (12 packs).</td>
-        </tr>
-        <tr>
-          <td><strong>Pack Size (Pack Factor)</strong></td>
-          <td>How many kitchen units are inside 1 buying package.</td>
-          <td><strong>50</strong> (1 bag has 50 kg Teff); <strong>24</strong> (1 crate has 24 bottles of St. George).</td>
-        </tr>
-        <tr>
-          <td><strong>Prep Waste % (Shrinkage)</strong></td>
-          <td>The parts thrown in the trash when peeling or trimming.</td>
-          <td><strong>15%</strong> for Onions (skins and roots); <strong>0%</strong> for sealed bottled soda.</td>
-        </tr>
-        <tr>
-          <td><strong>ABC Priority Rule</strong></td>
-          <td>Which items need strict daily counting vs monthly counting.</td>
+          <td><code>SUP-ADDIS</code><br/><strong>Addis Abattoir Enterprise</strong></td>
           <td>
-            <span class="tag tag-red">Class A</span> Beef Fillet, Whiskey (Count daily).<br/>
-            <span class="tag tag-amber">Class B</span> Beer, Cheese, Cooking Oil (Count every 2 weeks).<br/>
-            <span class="tag tag-green">Class C</span> Salt, Toothpicks, Napkins (Count once a month).
+            • Beef Hindquarter: <strong>1,200 ETB / kg</strong><br/>
+            • Beef Fillet: <strong>1,800 ETB / kg</strong><br/>
+            • Minced Beef: <strong>1,300 ETB / kg</strong>
           </td>
+          <td>0% (Raw farm meat)</td>
+          <td>Min: 20 kg<br/>Lead: 1 day</td>
+        </tr>
+        <tr>
+          <td><code>SUP-BGI</code><br/><strong>BGI Ethiopia (St. George)</strong></td>
+          <td>
+            • St. George Beer 330ml: <strong>1,080 ETB / crate 24</strong> (45 ETB/btl)<br/>
+            • Castel Beer 330ml: <strong>1,200 ETB / crate 24</strong> (50 ETB/btl)
+          </td>
+          <td>15% VAT</td>
+          <td>Min: 10 crates<br/>Lead: 2 days</td>
+        </tr>
+        <tr>
+          <td><code>SUP-AMBO</code><br/><strong>Ambo Mineral Water</strong></td>
+          <td>• Ambo Sparkling 500ml: <strong>672 ETB / crate 24</strong> (28 ETB/btl)</td>
+          <td>15% VAT</td>
+          <td>Min: 5 crates<br/>Lead: 1 day</td>
+        </tr>
+        <tr>
+          <td><code>SUP-MERKATO</code><br/><strong>Merkato Grain &amp; Spice</strong></td>
+          <td>
+            • White Magna Teff: <strong>6,500 ETB / 50kg bag</strong> (130 ETB/kg)<br/>
+            • Red Onions: <strong>85 ETB / kg</strong> (2,125 ETB/25kg sack)<br/>
+            • Sunflower Oil: <strong>6,400 ETB / 20L can</strong> (320 ETB/L)
+          </td>
+          <td>0% (Grains / veg)</td>
+          <td>Min: 2 bags<br/>Lead: 2 days</td>
+        </tr>
+        <tr>
+          <td><code>SUP-MAMMA</code><br/><strong>Mamma Mia Dairy Farm</strong></td>
+          <td>
+            • Cooking Butter: <strong>950 ETB / kg</strong><br/>
+            • Fresh Milk: <strong>95 ETB / liter</strong>
+          </td>
+          <td>0% (Dairy)</td>
+          <td>Min: 5 kg<br/>Lead: 1 day</td>
         </tr>
       </tbody>
     </table>
 
-    <h3>2.4 Suppliers &amp; Agreed Prices (<code>/setup/suppliers</code>)</h3>
-    <p>
-      Register each vendor (*Addis Abattoir*, *BGI Ethiopia*, *Merkato Grain Traders*). Click on any supplier to open their <strong>Price Agreement</strong>:
-    </p>
-    <ul>
-      <li><strong>Contract Price:</strong> The price you agreed to pay in Birr (e.g., 6,500 Birr per 50kg Bag of Teff).</li>
-      <li><strong>Tax (VAT):</strong> 15% VAT for commercial drinks and processed foods, or 0% for basic farm grains.</li>
-      <li><strong>Minimum Order:</strong> The smallest order the vendor will deliver (e.g., minimum 5 crates).</li>
-      <li><strong>Delivery Days:</strong> How many days it takes them to deliver after you place the order.</li>
-    </ul>
-
-    <!-- MODULE 2 (CONT) -->
     <div class="page-break"></div>
-    <h3>2.5 Recipes &amp; Sub-Recipes (<code>/setup/recipes</code>)</h3>
-    <p>
-      Recipes tell the computer what ingredients are used when a guest orders food. There are two kinds of recipes:
-    </p>
+    <h3>Step 5: Create Item Categories (<code>/setup/categories</code>)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Category Name</th>
+          <th>Kind Dropdown</th>
+          <th>Examples of items</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>MEAT</code></td><td>Fresh Meat &amp; Poultry</td><td><span class="tag tag-amber">food</span></td><td>Beef fillet, carcasses, chicken, minced meat.</td></tr>
+        <tr><td><code>VEG</code></td><td>Fresh Vegetables &amp; Produce</td><td><span class="tag tag-amber">food</span></td><td>Red onions, garlic, ginger, tomatoes, chili.</td></tr>
+        <tr><td><code>GRAIN</code></td><td>Flour, Teff &amp; Grains</td><td><span class="tag tag-amber">food</span></td><td>White teff flour, rice, shiro powder.</td></tr>
+        <tr><td><code>DAIRY</code></td><td>Milk, Butter &amp; Cheese</td><td><span class="tag tag-amber">food</span></td><td>Fresh butter, whole milk, cottage cheese (Ayib).</td></tr>
+        <tr><td><code>SPICE</code></td><td>Spices, Oils &amp; Seasonings</td><td><span class="tag tag-amber">food</span></td><td>Berbere, cooking oil, salt, black pepper.</td></tr>
+        <tr><td><code>BEER</code></td><td>Bottled &amp; Draught Beers</td><td><span class="tag tag-blue">beverage</span></td><td>St. George, Castel, draught beer kegs.</td></tr>
+        <tr><td><code>WINE</code></td><td>Wines, Liquors &amp; Spirits</td><td><span class="tag tag-blue">beverage</span></td><td>Awash wine, Johnnie Walker Red, Gin.</td></tr>
+        <tr><td><code>SOFT</code></td><td>Soft Drinks &amp; Water</td><td><span class="tag tag-blue">beverage</span></td><td>Ambo mineral water, Coca-Cola, Sprite.</td></tr>
+        <tr><td><code>HOT</code></td><td>Coffee, Tea &amp; Hot Drinks</td><td><span class="tag tag-blue">beverage</span></td><td>Roasted coffee beans, tea bags.</td></tr>
+        <tr><td><code>PACK</code></td><td>Takeaway Packaging</td><td><span class="tag tag-green">other</span></td><td>Foil containers, paper bags, napkins.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Step 6: Register Raw Items &amp; Products (<code>/setup/items</code>)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Item Code &amp; Name</th>
+          <th>Category</th>
+          <th>Kitchen Unit</th>
+          <th>Buying Pack &amp; Factor</th>
+          <th>Cost (ETB)</th>
+          <th>Prep Waste %</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>RM-BEEF-FILLET</code><br/>Beef Tenderloin Fillet</td>
+          <td><code>MEAT</code></td>
+          <td><code>Kg</code></td>
+          <td>Direct by Kg (Factor = 1)</td>
+          <td>1,800.00 / kg</td>
+          <td>5% (fat trim)</td>
+          <td><span class="tag tag-red">Class A</span> (Daily)</td>
+        </tr>
+        <tr>
+          <td><code>RM-BEEF-MINCE</code><br/>Lean Minced Beef</td>
+          <td><code>MEAT</code></td>
+          <td><code>Kg</code></td>
+          <td>Direct by Kg (Factor = 1)</td>
+          <td>1,300.00 / kg</td>
+          <td>0%</td>
+          <td><span class="tag tag-red">Class A</span> (Daily)</td>
+        </tr>
+        <tr>
+          <td><code>RM-TEFF-WHITE</code><br/>White Magna Teff</td>
+          <td><code>GRAIN</code></td>
+          <td><code>Kg</code></td>
+          <td><strong>Bag (50 kg)</strong> (Factor = <strong>50</strong>)</td>
+          <td>130.00 / kg (6,500/bag)</td>
+          <td>2% (sifting)</td>
+          <td><span class="tag tag-amber">Class B</span> (Bi-weekly)</td>
+        </tr>
+        <tr>
+          <td><code>RM-ONION-RED</code><br/>Red Onions (Habesha)</td>
+          <td><code>VEG</code></td>
+          <td><code>Kg</code></td>
+          <td><strong>Sack (25 kg)</strong> (Factor = <strong>25</strong>)</td>
+          <td>85.00 / kg (2,125/sack)</td>
+          <td>15% (skin/roots)</td>
+          <td><span class="tag tag-amber">Class B</span> (Bi-weekly)</td>
+        </tr>
+        <tr>
+          <td><code>RM-BUTTER-RAW</code><br/>Fresh Cooking Butter</td>
+          <td><code>DAIRY</code></td>
+          <td><code>Kg</code></td>
+          <td><strong>Bucket (10 kg)</strong> (Factor = <strong>10</strong>)</td>
+          <td>950.00 / kg</td>
+          <td>10% (whey loss)</td>
+          <td><span class="tag tag-red">Class A</span> (Daily)</td>
+        </tr>
+        <tr>
+          <td><code>RM-STG-BEER</code><br/>St. George Beer 330ml</td>
+          <td><code>BEER</code></td>
+          <td><code>Bottle</code></td>
+          <td><strong>Crate (24 btls)</strong> (Factor = <strong>24</strong>)</td>
+          <td>45.00 / bottle (1,080/crate)</td>
+          <td>0%</td>
+          <td><span class="tag tag-amber">Class B</span> (Bi-weekly)</td>
+        </tr>
+        <tr>
+          <td><code>RM-AMBO-500</code><br/>Ambo Mineral Water 500ml</td>
+          <td><code>SOFT</code></td>
+          <td><code>Bottle</code></td>
+          <td><strong>Crate (24 btls)</strong> (Factor = <strong>24</strong>)</td>
+          <td>28.00 / bottle (672/crate)</td>
+          <td>0%</td>
+          <td><span class="tag tag-amber">Class B</span> (Bi-weekly)</td>
+        </tr>
+        <tr>
+          <td><code>RM-JW-RED</code><br/>Johnnie Walker Red 750ml</td>
+          <td><code>WINE</code></td>
+          <td><code>Bottle</code></td>
+          <td><strong>Carton (12 btls)</strong> (Factor = <strong>12</strong>)</td>
+          <td>3,200.00 / bottle</td>
+          <td>0%</td>
+          <td><span class="tag tag-red">Class A</span> (Daily)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Step 7: Enter Opening Physical Stock (<code>/setup/opening-stock</code>)</h3>
+    <p>Record what is on the shelves right now on Day 1:</p>
     <ul>
-      <li>
-        <strong>1. Sub-Recipes (Batches Prepared in Advance):</strong> Food your kitchen preps in big tubs before service:
-        <br/><em>Example:</em> <strong>Injera Batch (100 Pieces):</strong> Uses 30 kg Teff flour + yeast + water.
-        <br/><em>Example:</em> <strong>Spiced Butter (Niter Kibbeh - 5 Kg):</strong> Uses 5 kg raw butter + onions + garlic + ginger + spices.
-      </li>
-      <li>
-        <strong>2. Menu Dish Recipes (What the Guest Orders on the Menu):</strong>
-        <br/><em>Example:</em> <strong>Special Tibs</strong> uses:
-        <ul>
-          <li>0.250 kg Beef Fillet (250 grams)</li>
-          <li>0.080 kg Red or White Onion (80 grams)</li>
-          <li>0.030 kg Spiced Butter / Niter Kibbeh (30 grams)</li>
-          <li>2 pieces of Injera (from the prep batch above)</li>
-        </ul>
-      </li>
+      <li><code>MAIN</code> Store: 10 bags Teff (500 kg @ 130 ETB) = 65,000 ETB | 5 cans Cooking Oil (100 L @ 320 ETB) = 32,000 ETB</li>
+      <li><code>KITCHEN</code>: 25 kg Beef Fillet @ 1,800 ETB = 45,000 ETB | 50 kg Red Onions @ 85 ETB = 4,250 ETB</li>
+      <li><code>BAR</code>: 10 crates St. George Beer (240 bottles @ 45 ETB) = 10,800 ETB | 6 bottles JW Red @ 3,200 ETB = 19,200 ETB</li>
     </ul>
 
-    <h3>2.6 Connecting Cash Register Buttons (<code>/setup/pos-map</code>)</h3>
-    <p>
-      When your CNet cash registers print a guest receipt, every button has an ID number (like <code>101</code> for "SPECIAL TIBS").
-    </p>
-    <p>
-      In this screen, link button <code>101</code> to your "Special Tibs" recipe. Whenever you add a new item to your CNet menu, it will appear here under <strong>Unmapped Items</strong> so you can connect it with one click.
-    </p>
+    <h3>Step 8: Register Menu Items (<code>/setup/menu-items</code>)</h3>
+    <p>What the cash register sells to guests:</p>
+    <ul>
+      <li><code>MI-TIBS-SPEC</code> - Special Beef Tibs (Food, Portion, Selling Price: 850 ETB)</li>
+      <li><code>MI-KITFO-REG</code> - Yeajet Kitfo Regular (Food, Portion, Selling Price: 750 ETB)</li>
+      <li><code>MI-BEER-STG</code> - St. George Beer 330ml (Beverage, Bottle, Selling Price: 120 ETB)</li>
+      <li><code>MI-AMBO-500</code> - Ambo Mineral Water 500ml (Beverage, Bottle, Selling Price: 70 ETB)</li>
+    </ul>
 
-    <h3>2.7 Par Levels: Never Running Out of Food (<code>/setup/stores/[id]</code>)</h3>
-    <p>
-      In every kitchen and bar, you set two safety numbers for every ingredient:
-    </p>
+    <div class="page-break"></div>
+    <h3>Step 9: Build Recipes &amp; Sub-Recipes (<code>/setup/recipes</code>)</h3>
     <div class="formula-box">
-      <strong>Minimum Stock (The Danger Line):</strong> The lowest stock allowed before you risk running out.<br/>
-      <strong>Maximum Target (The Ceiling):</strong> The ideal amount to hold for a busy weekend without wasting space or letting food spoil.<br/><br/>
-      <em>Real Example:</em> Main Kitchen holds <strong>Minimum = 10 kg</strong> and <strong>Maximum = 30 kg</strong> of Beef Fillet.<br/>
-      If the kitchen has <strong>12 kg</strong> left in the morning, clicking <strong>⚡ Auto-Fill</strong> automatically requests exactly <strong>18 kg</strong> (30 - 12) from the Central Store!
+      <strong>Sub-Recipe: Injera Batch (Produces 100 pcs)</strong><br/>
+      • 30 kg Teff (<code>RM-TEFF-WHITE</code>) @ 130 ETB = 3,900 ETB + Yeast/Salt 150 ETB = 4,050 ETB (<strong>40.50 ETB per 1 Injera</strong>)<br/><br/>
+      <strong>Menu Recipe: Special Beef Tibs (1 Portion)</strong><br/>
+      • 0.250 kg Beef Fillet @ 1,800 ETB = 450.00 ETB<br/>
+      • 0.080 kg Red Onions @ 85 ETB = 6.80 ETB<br/>
+      • 0.030 kg Spiced Butter @ 1,100 ETB = 33.00 ETB<br/>
+      • 2 pcs Injera @ 40.50 ETB = 81.00 ETB + seasonings 5.00 ETB = <strong>575.80 ETB Cost</strong> (Selling Price: 850 ETB)
     </div>
 
-    <!-- MODULE 3 -->
-    <div class="page-break"></div>
-    <h2>Module 3: Daily Step-by-Step Workflows (A Day in the Life)</h2>
+    <h3>Step 10: Link Cash Register Buttons (<code>/setup/pos-map</code>)</h3>
+    <p>Connect CNet POS till buttons to menu recipes: Button <code>101</code> &rarr; <code>MI-TIBS-SPEC</code> | Button <code>201</code> &rarr; <code>MI-BEER-STG</code>.</p>
+
+    <h3>Step 11: Map POS Category to Store (<code>/setup/pos-stores</code>)</h3>
+    <p>Tell the computer: Category <code>FOOD</code> depletes from <code>Main Kitchen</code>; Category <code>BEVERAGE</code> depletes from <code>Main Bar</code>.</p>
+
+    <h3>Step 12: Set Safety Par Levels (<code>/setup/stores/[id]</code>)</h3>
     <p>
-      Here is how the hotel staff runs the system during a normal 24-hour day:
+      • Main Kitchen: Beef Fillet (Min = 10 kg, Max = 30 kg) | Red Onions (Min = 20 kg, Max = 60 kg)<br/>
+      • Main Bar: St. George Beer (Min = 48 bottles / 2 crates, Max = 240 bottles / 10 crates)
     </p>
 
-    <h3>Workflow 1: Receiving Morning Deliveries (Storekeeper)</h3>
-    <ol>
-      <li>The delivery truck arrives at the loading dock with goods and a paper invoice.</li>
-      <li>The Storekeeper logs in, opens <strong>Purchases</strong> (<code>/purchases</code>), and clicks <strong>+ New Delivery (GRN)</strong>.</li>
-      <li><strong>Physical Scale Rule:</strong> Put the boxes on the physical scale! Never trust the paper invoice. If the paper says 50 kg but the scale says 47 kg, enter 47 kg.</li>
-      <li>Type in the supplier name, invoice number, weighed quantity, and price.</li>
-      <li><strong>Price Check Warning:</strong> If the supplier raised the price by more than 2% above the agreed contract, the screen shows a bright warning that requires the Cost Controller's approval.</li>
-      <li>Click <strong>Book Delivery</strong>. The goods are added to Central Store and the average price updates automatically.</li>
-    </ol>
+    <div class="callout callout-tip">
+      <div class="callout-title">General Manager's Daily &amp; Weekly Routine</div>
+      1. Open <strong>Reports</strong> (<code>/reports/cost-control</code>) every Monday morning.<br/>
+      2. Check <strong>Actual Food Cost %</strong> (should be 30%–34%) and <strong>Actual Beverage Cost %</strong> (18%–22%).<br/>
+      3. Look at <strong>Potential Savings in Birr</strong>: If it says 100,000 Birr lost, call the Chef and Cost Controller immediately to review portion scales and waste logs.
+    </div>
 
-    <h3>Workflow 2: Moving Stock to Kitchen &amp; Bar (Chef &amp; Storekeeper)</h3>
-    <ol>
-      <li>Before lunch prep, the Chef opens <strong>Requisitions</strong> (<code>/requests</code>).</li>
-      <li>Selects <strong>Main Kitchen</strong> and clicks <strong>⚡ Auto-Fill from Par Stock</strong>.</li>
-      <li>The computer checks what is low and fills in the exact amounts needed. The Chef reviews and clicks <strong>Submit Requisition</strong>.</li>
-      <li>The Storekeeper opens <code>/requests</code>, gets the items from the warehouse shelves, and clicks <strong>Fulfill &amp; Issue Stock</strong>.</li>
-      <li>Warehouse stock goes down, kitchen stock goes up. No money is lost; it just moved rooms.</li>
-    </ol>
+    <!-- ROLE 2: F&B COST CONTROLLER -->
+    <div class="page-break"></div>
+    <h2><span class="role-badge role-ctrl">ROLE 2</span> F&amp;B Cost Controller / Auditor (Daily Leak Hunter)</h2>
+    <p>
+      The <strong>Cost Controller</strong> is the financial watchdog. They make sure inventory matches money. Here is their step-by-step daily routine:
+    </p>
 
-    <h3>Workflow 3: Cutting Meat &amp; Calculating Cuts (Chef)</h3>
+    <h3>Step 1: Check Morning Delivery Price Warnings (9:00 AM)</h3>
     <ol>
-      <li>The hotel buys a 100 kg beef carcass for 80,000 Birr (800 Birr per kg).</li>
-      <li>The butcher breaks it down in the meat prep room:
+      <li>Open <strong>Purchases</strong> (<code>/purchases</code>).</li>
+      <li>Review any delivery flagged with a <strong>Price Variance Alert</strong>.</li>
+      <li>If a supplier invoiced beef at 1,500 Birr instead of the contracted 1,400 Birr:
         <ul>
-          <li><strong>Prime Steaks:</strong> 12 kg Tenderloin, 18 kg Ribeye, 20 kg Sirloin, 30 kg Minced Meat.</li>
-          <li><strong>Extra Parts:</strong> 15 kg Soup Bones (worth 150 Birr/kg = 2,250 Birr) + 5 kg Fat (worth 200 Birr/kg = 1,000 Birr).</li>
+          <li>Reject the invoice or demand a credit note from the supplier.</li>
+          <li>If the GM approved the market increase, click <strong>Authorize Price Override</strong>.</li>
         </ul>
       </li>
-      <li>The Chef opens <strong>Production</strong> (<code>/production</code>) and types in the numbers.</li>
-      <li><strong>Bone &amp; Fat Credit:</strong> The system takes away the 3,250 Birr value of the bones and fat from the 80,000 Birr purchase. It divides the remaining 76,750 Birr fairly across the steaks so your menu recipe costs are 100% accurate!</li>
-      <li>Click <strong>Save &amp; Execute</strong>. The raw carcass is removed from inventory and the prime cuts are added to the kitchen stock.</li>
     </ol>
 
-    <h3>Workflow 4: Recording Burnt, Dropped, or Spoiled Food (Kitchen &amp; Bar)</h3>
+    <h3>Step 2: Review and Approve Kitchen &amp; Bar Waste (2:00 PM)</h3>
     <ol>
-      <li>If a cook burns a pan of tibs, or a bartender drops a bottle of gin, they open <strong>Waste</strong> (<code>/waste</code>).</li>
-      <li>Select the room, the item or recipe, the amount lost, and pick the reason (<em>Burnt, Spoiled / Expired, Dropped / Broken</em>).</li>
-      <li>The Cost Controller reviews the waste log and clicks <strong>Approve Write-off</strong>.</li>
-      <li><em>Why this is important:</em> If staff hide burnt meat and don't write it down, the computer thinks someone stole it. Writing it down keeps honest staff safe and shows the Chef where training is needed.</li>
+      <li>Open <strong>Waste</strong> (<code>/waste</code>).</li>
+      <li>Inspect items logged by the Chef or Bartender (burnt tibs, broken beer bottles, spoiled vegetables).</li>
+      <li>Verify the reason. Click <strong>Approve Write-off</strong> to deduct the stock from the room and book the loss to the waste expense ledger.</li>
     </ol>
 
-    <h3>Workflow 5: End of Day / Night Audit — Entering Sales (Cost Controller)</h3>
+    <h3>Step 3: Conduct Surprise Blind Spot-Checks (4:00 PM)</h3>
     <ol>
-      <li>At midnight or closing time, export the daily sales file from the CNet cash registers (<code>cnet_sales_export.xlsx</code>).</li>
-      <li>The Cost Controller opens <strong>Sales &amp; Depletions</strong> (<code>/sales/eod</code>).</li>
-      <li>Drag and drop the Excel file into the box. The system checks that the money matches the register receipts (Total Sales, 15% VAT, 10% Service Charge).</li>
-      <li>Click: <strong>"Deduct Ingredients from Stock (Explode Recipes)"</strong>.</li>
-      <li>The computer calculates all 1,200 dishes and drinks sold, and automatically subtracts the exact grams of beef, onions, butter, and beer bottles from the kitchen and bar shelves!</li>
+      <li>Open <strong>Physical Counts</strong> (<code>/counts</code>) &rarr; Click <strong>+ New Count Sheet</strong>.</li>
+      <li>Select <strong>Main Bar</strong>, check <strong>Blind Count Mode</strong>, and print the sheet.</li>
+      <li>Walk to the bar and count 5 expensive liquor bottles (Johnnie Walker, Gin, Wine).</li>
+      <li>Enter the counted numbers. If variance exceeds <strong>500 Birr or 5%</strong>, a red warning pops up requiring the bartender to explain the shortage.</li>
     </ol>
 
-    <h3>Workflow 6: Counting Stock on Shelves (Auditors &amp; Supervisors)</h3>
+    <h3>Step 4: Midnight Night Audit — Upload CNet Sales &amp; Deplete Stock (11:30 PM)</h3>
     <ol>
-      <li>Once a week or month, auditors open <strong>Physical Counts</strong> (<code>/counts</code>) and click <strong>+ New Count Sheet</strong>.</li>
-      <li>Turn on <strong>Blind Count Mode</strong> and click <strong>Print Sheet</strong>.
-        <br/><em>What is a Blind Count?</em> The printed paper hides what the computer expects. If staff see "System says 25 bottles", they are tempted to just write 25 without counting. A blind sheet forces staff to count what is really on the shelf!
-      </li>
-      <li>Staff count the shelves and type the real numbers into the computer.</li>
-      <li><strong>🚨 Big Difference Alert:</strong> If any item is missing more than <strong>500 Birr or 5%</strong>, a red warning flags the item. A supervisor must recount and select the cause (<em>Too Heavy Portions, Theft, Unrecorded Spoilage</em>).</li>
+      <li>Get the daily sales Excel file exported from CNet POS (<code>cnet_sales_export.xlsx</code>).</li>
+      <li>Open <strong>Sales &amp; Depletions</strong> (<code>/sales/eod</code>).</li>
+      <li>Drag and drop the Excel file. The system checks that row totals equal footer totals (Gross Sales, 15% VAT, 10% Service Charge).</li>
+      <li>Click: <strong>"Explode Recipes &amp; Post Stock Depletions"</strong>.</li>
+      <li>The system automatically removes all beef, onions, butter, and beer bottles sold today from the Kitchen and Bar shelves!</li>
     </ol>
 
-    <!-- MODULE 4 -->
+    <h3>Step 5: Audit the Item History Card</h3>
+    <p>
+      If 5 kg of Beef Fillet goes missing, open the <strong>Item History Card</strong> on the dashboard. It shows every date, delivery, transfer, and sale with the exact staff member responsible.
+    </p>
+
+    <!-- ROLE 3: CENTRAL STOREKEEPER -->
     <div class="page-break"></div>
-    <h2>Module 4: Reading Your Reports &amp; Numbers (The Dashboard)</h2>
+    <h2><span class="role-badge role-store">ROLE 3</span> Central Storekeeper (Receiving &amp; Warehouse Keeper)</h2>
     <p>
-      Everything comes together on the <strong>Executive Cost Control Dashboard</strong> (<code>/reports/cost-control</code>):
+      The <strong>Storekeeper</strong> controls the loading dock and the central warehouse. No food leaves without paperwork!
     </p>
 
-    <h3>4.1 The Food &amp; Drink Summary Card</h3>
-    <p>
-      This shows <strong>Food Cost</strong> and <strong>Drink Cost</strong> side by side:
-    </p>
-    <ul>
-      <li><strong>Target Cost % (What SHOULD have been spent):</strong> Based strictly on the recipes of what guests bought on the cash register.</li>
-      <li><strong>Actual Cost % (What was ACTUALLY used):</strong> Based on opening stock + deliveries - closing stock.</li>
-      <li><strong>The Difference (The Leak):</strong> If Target Food Cost was 29% but Actual Food Cost was 34%, that 5% difference is lost money.</li>
-      <li><strong>Potential Savings in Birr:</strong> On 2,000,000 Birr of monthly food sales, a 5% leak means <strong>100,000 Birr in lost cash</strong> that vanished due to heavy portions, burnt food, or theft!</li>
-    </ul>
+    <h3>Step 1: Receiving Morning Deliveries (Physical Scale Rule) (7:30 AM)</h3>
+    <ol>
+      <li>Supplier arrives at the loading dock with goods and a delivery paper.</li>
+      <li><strong>Scale Verification:</strong> Place every box and sack on the physical scale. If the paper says 50 kg but the scale says 47 kg, write 47 kg! Never trust the supplier's paper.</li>
+      <li>Open <strong>Purchases</strong> (<code>/purchases</code>) &rarr; Click <strong>+ New Delivery (GRN)</strong>.</li>
+      <li>Select supplier (e.g. *Addis Abattoir*), enter delivery note number, physically weighed weight, and invoice price.</li>
+      <li>Click <strong>Book Delivery</strong>. Warehouse inventory increases immediately at the new moving average price.</li>
+    </ol>
 
-    <h3>4.2 Outlet Performance Matrix</h3>
+    <h3>Step 2: Checking Reorder Needs (PO Generation) (10:00 AM)</h3>
+    <ol>
+      <li>Check Central Store shelves against Par Levels.</li>
+      <li>If Teff is down to 2 bags (below minimum 4 bags), generate a <strong>Purchase Order (PO)</strong> to Merkato Grain for 10 bags.</li>
+    </ol>
+
+    <h3>Step 3: Fulfill Kitchen &amp; Bar Requisitions (11:00 AM)</h3>
+    <ol>
+      <li>Open <strong>Requisitions</strong> (<code>/requests</code>).</li>
+      <li>Look at pending requests submitted by the Chef and Bar Supervisor.</li>
+      <li>Pick the requested items from warehouse shelves (e.g. 18 kg Beef Fillet, 5 crates of St. George).</li>
+      <li>Hand goods over to the cook or bar runner, and click <strong>Fulfill &amp; Issue Stock</strong>.</li>
+      <li>Central Store stock decreases, Kitchen/Bar stock increases.</li>
+    </ol>
+
+    <h3>Step 4: Warehouse Evening Lockup &amp; Cleanliness (6:00 PM)</h3>
+    <ol>
+      <li>Inspect meat walk-in cooler temperature (must be between 0°C and 4°C).</li>
+      <li>Ensure grains (Teff) are raised on wooden pallets, away from damp floors.</li>
+      <li>Lock the warehouse doors and return keys to the security office.</li>
+    </ol>
+
+    <!-- ROLE 4: EXECUTIVE CHEF -->
+    <div class="page-break"></div>
+    <h2><span class="role-badge role-chef">ROLE 4</span> Executive Chef &amp; Kitchen Cooks (Culinary &amp; Portion Control)</h2>
     <p>
-      Shows how each room is operating:
+      The <strong>Chef</strong> runs food prep, stops heavy-handed over-portioning, cuts whole carcasses, and logs burnt dishes.
     </p>
-    <ul>
-      <li><strong>Deliveries &amp; Transfers In/Out:</strong> The exact Birr value of goods flowing into and out of each kitchen and bar.</li>
-      <li><strong>Stock Speed (Turnover):</strong> How fast each store sells through its inventory.
+
+    <h3>Step 1: Morning Cooler Check &amp; 1-Click Requisition (8:30 AM)</h3>
+    <ol>
+      <li>Open walk-in cooler and check what ingredients are low.</li>
+      <li>Log into the system, open <strong>Requisitions</strong> (<code>/requests</code>), and select <strong>Main Kitchen</strong>.</li>
+      <li>Click: <strong>⚡ Auto-Fill from Par Stock</strong>. The computer calculates what is low (e.g. 18 kg beef, 45 kg onions).</li>
+      <li>Chef reviews and clicks <strong>Submit Requisition</strong>. Goods are dispatched by the storekeeper.</li>
+    </ol>
+
+    <h3>Step 2: Butcher Carcass Yield Tests (10:00 AM)</h3>
+    <p>When the hotel buys a whole 100 kg cow carcass for 80,000 Birr (800 Birr/kg):</p>
+    <ol>
+      <li>Butcher breaks down the carcass on the butcher block.</li>
+      <li>Weigh the primal cuts: 12 kg Tenderloin, 18 kg Ribeye, 20 kg Sirloin, 30 kg Minced Meat.</li>
+      <li>Weigh the byproducts: 15 kg Soup Bones (worth 150 ETB/kg = 2,250 ETB) and 5 kg Fat (worth 200 ETB/kg = 1,000 ETB).</li>
+      <li>Open <strong>Production</strong> (<code>/production</code>) &rarr; Enter weights.</li>
+      <li>The system subtracts the 3,250 ETB value of bones/fat from the 80,000 Birr carcass, deriving an honest meat cost of 76,750 Birr split across the prime steaks!</li>
+      <li>Click <strong>Save &amp; Execute</strong>. The raw carcass is removed and individual prime cuts are added to the kitchen inventory.</li>
+    </ol>
+
+    <h3>Step 3: Execute Batch Prep Cooking (11:30 AM)</h3>
+    <ol>
+      <li>When baking 100 pieces of Injera or cooking 5 kg of Spiced Butter (<em>Niter Kibbeh</em>):</li>
+      <li>Open <strong>Production</strong> (<code>/production</code>) &rarr; Select <strong>Injera Batch</strong> &rarr; Click <strong>Produce Batch</strong>.</li>
+      <li>The computer deducts 30 kg of Teff and adds 100 finished Injeras to the kitchen stock at 40.50 Birr each.</li>
+    </ol>
+
+    <h3>Step 4: Logging Kitchen Waste (Immediately When It Happens)</h3>
+    <ol>
+      <li>If a cook burns a pan of tibs or drops raw chicken on the floor:</li>
+      <li>Open <strong>Waste</strong> (<code>/waste</code>) &rarr; Select <code>KITCHEN</code> &rarr; Choose <strong>Special Tibs</strong> &rarr; Enter Qty = 2 &rarr; Reason = <em>Burnt</em>.</li>
+      <li><em>Why this matters:</em> Writing down burnt food proves that nobody stole the meat!</li>
+    </ol>
+
+    <!-- ROLE 5: BAR MANAGER -->
+    <div class="page-break"></div>
+    <h2><span class="role-badge role-bar">ROLE 5</span> Bar Manager &amp; Bartenders (Beverage &amp; Bottle Control)</h2>
+    <p>
+      The <strong>Bar Manager</strong> controls high-margin liquor, wine, and beers, ensuring every drop is accounted for.
+    </p>
+
+    <h3>Step 1: Daily Drink Requisition (10:30 AM)</h3>
+    <ol>
+      <li>Count empty beer crates. Open <strong>Requisitions</strong> (<code>/requests</code>) &rarr; Select <strong>Main Bar</strong>.</li>
+      <li>Click <strong>⚡ Auto-Fill from Par Stock</strong> (orders 5 crates St. George, 3 crates Ambo, 2 bottles JW Red).</li>
+      <li>Click <strong>Submit</strong> and collect the crates from the Central Store.</li>
+    </ol>
+
+    <h3>Step 2: Checking Delivered Bottles &amp; Caps (11:30 AM)</h3>
+    <ol>
+      <li>Inspect beer crates: check for cracked bottles, leaking caps, or missing bottles.</li>
+      <li>Check tax stamps on whiskey and wine bottles.</li>
+    </ol>
+
+    <h3>Step 3: Inter-Outlet Transfers (Bar &harr; Kitchen) (3:00 PM)</h3>
+    <ol>
+      <li>If the kitchen needs 1 bottle of white wine for cooking fish, or the bar needs 2 kg of lemons and mint from the kitchen:</li>
+      <li>Open <strong>Transfers</strong> (<code>/transfers</code>) &rarr; Select From: <code>BAR</code> &rarr; To: <code>KITCHEN</code> &rarr; 1 bottle Wine.</li>
+      <li>This ensures the kitchen pays for the cooking wine, not the bar!</li>
+    </ol>
+
+    <h3>Step 4: Logging Spillage &amp; Broken Bottles</h3>
+    <ol>
+      <li>If a bottle of beer falls and smashes on the bar floor:</li>
+      <li>Open <strong>Waste</strong> (<code>/waste</code>) &rarr; Select <code>BAR</code> &rarr; Item: <code>RM-STG-BEER</code> &rarr; Qty = 1 &rarr; Reason: <em>Dropped / Broken</em>.</li>
+    </ol>
+
+    <h3>Step 5: Nightly Closing Bottle Count (11:00 PM)</h3>
+    <ol>
+      <li>Count open bottles of expensive spirits (Johnnie Walker Red, Gin, Vodka) using the tenth-ruler method (0.2, 0.5, 0.8 bottle).</li>
+      <li>Count full unopened bottles in the back cabinet.</li>
+      <li>Lock the liquor cage and deposit keys in the management safe.</li>
+    </ol>
+
+    <!-- ROLE 6: PURCHASING AGENT -->
+    <div class="page-break"></div>
+    <h2><span class="role-badge role-purch">ROLE 6</span> Purchasing Agent &amp; Buyer (Supplier Contracts &amp; Market Deals)</h2>
+    <p>
+      The <strong>Purchasing Agent</strong> negotiates wholesale pricing, monitors delivery lead times, and enforces price agreements.
+    </p>
+
+    <h3>Step 1: Review Warehouse Stock Shortages (8:00 AM)</h3>
+    <ol>
+      <li>Review Purchase Orders generated by the Storekeeper for items below minimum safety buffer.</li>
+      <li>Combine small orders into bulk supplier orders to get wholesale discounts and save delivery fees.</li>
+    </ol>
+
+    <h3>Step 2: Manage Supplier Contract Price Books (<code>/setup/suppliers</code>)</h3>
+    <ol>
+      <li>Open <strong>Suppliers</strong> &rarr; Click on a vendor (e.g. *Merkato Grain Traders*).</li>
+      <li>Review agreed prices:
         <ul>
-          <li><em>Fast Speed:</em> Fresh food, happy guests, money in the bank.</li>
-          <li><em>Slow Speed:</em> Food sitting in the freezer getting freezer-burned, and hotel cash trapped on shelves.</li>
+          <li>If the supplier offers a seasonal discount on Teff (e.g. dropping from 6,500 to 6,200 ETB/bag), update the contract price book immediately.</li>
+          <li>Set the <strong>Minimum Order Quantity (MOQ)</strong> so the kitchen doesn't order 1 single bottle when the vendor requires full crates.</li>
         </ul>
       </li>
-    </ul>
+    </ol>
 
-    <h3>4.3 ABC Money Matrix (Where is Hotel Cash Tied Up?)</h3>
-    <p>
-      Divides your hotel inventory into 3 money groups:
-    </p>
-    <ul>
-      <li><strong>Class A (80% of your money):</strong> Beef, steaks, expensive whiskey. <em>Rule: Count weekly or daily.</em></li>
-      <li><strong>Class B (15% of your money):</strong> Beer crates, cheese, butter, cooking oil. <em>Rule: Count every 2 weeks.</em></li>
-      <li><strong>Class C (5% of your money):</strong> Salt, toothpicks, paper napkins. <em>Rule: Buy in bulk, count once a month.</em></li>
-    </ul>
+    <h3>Step 3: Coordinate On-Time Deliveries</h3>
+    <ol>
+      <li>Call Addis Abattoir by 3:00 PM to confirm tomorrow morning's beef delivery by 7:30 AM before the kitchen starts prep.</li>
+      <li>Ensure delivery notes are clearly printed with purchase order reference numbers.</li>
+    </ol>
 
-    <h3>4.4 Item History Card (The Bank Statement for Each Item)</h3>
-    <p>
-      Just like a bank statement shows every deposit and withdrawal, the Item History Card shows every movement for any ingredient:
-    </p>
-    <p>
-      If 5 kg of Beef Fillet goes missing between Tuesday and Wednesday, open its history card. You will see every delivery, every kitchen transfer, every dish sold on CNet, and the exact staff member logged in at each step.
-    </p>
-
-    <!-- MODULE 5 -->
+    <!-- SUMMARY MATRIX -->
     <div class="page-break"></div>
-    <h2>Module 5: Daily Shift Checklists for Every Staff Role</h2>
+    <h2>Summary: Daily Team Handover &amp; Responsibility Matrix</h2>
 
     <table>
       <thead>
         <tr>
           <th>Role</th>
-          <th>Morning Shift</th>
-          <th>Afternoon Shift</th>
-          <th>Closing / Night Audit</th>
+          <th>Morning (Opening)</th>
+          <th>Afternoon (Service &amp; Prep)</th>
+          <th>Night (Closing &amp; Audit)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Central Storekeeper</strong></td>
-          <td>
-            • Weigh morning deliveries on the scale.<br/>
-            • Enter delivery note in <code>/purchases</code>.<br/>
-            • Check price alerts against contract.
-          </td>
-          <td>
-            • Fulfill and hand over pending stock requests for Kitchen and Bar.<br/>
-            • Keep store neat and clean.
-          </td>
-          <td>
-            • Lock warehouse and cooler rooms.<br/>
-            • Check items running low and prepare purchase order for tomorrow.
-          </td>
+          <td><strong>1. General Manager</strong></td>
+          <td>Review weekly Food &amp; Beverage Cost % on dashboard.</td>
+          <td>Conduct random kitchen scale inspections.</td>
+          <td>Sign off on high-value price overrides and supplier contracts.</td>
         </tr>
         <tr>
-          <td><strong>Executive Chef &amp; Cooks</strong></td>
-          <td>
-            • Inspect walk-in cooler.<br/>
-            • Click 1-click Par Request on <code>/requests</code> to order meat and veggies.
-          </td>
-          <td>
-            • Enter meat cuts on <code>/production</code>.<br/>
-            • Cook prep batches (Injera, kibbeh, sauces).
-          </td>
-          <td>
-            • Record any burnt or spoiled food on <code>/waste</code>.<br/>
-            • Do a quick evening count of high-value beef steaks.
-          </td>
+          <td><strong>2. Cost Controller</strong></td>
+          <td>Review delivery price variance alerts from yesterday.</td>
+          <td>Conduct surprise blind counts in bar &amp; kitchen.</td>
+          <td>Upload CNet sales export on <code>/sales/eod</code> and explode recipes.</td>
         </tr>
         <tr>
-          <td><strong>Bar Manager &amp; Bartenders</strong></td>
-          <td>
-            • Submit drink order request from Central Store on <code>/requests</code>.
-          </td>
-          <td>
-            • Accept crates of beer and soft drinks.<br/>
-            • Check bottle seals and crate counts.<br/>
-            • Record any broken bottles on <code>/waste</code>.
-          </td>
-          <td>
-            • Count open bottles of expensive spirits.<br/>
-            • Lock liquor cabinet and beer cooler.
-          </td>
+          <td><strong>3. Storekeeper</strong></td>
+          <td>Weigh morning deliveries on physical scale (GRN).</td>
+          <td>Fulfill par requisitions to Kitchen and Bar.</td>
+          <td>Lock central warehouse and check cooler temperatures.</td>
         </tr>
         <tr>
-          <td><strong>Cost Controller &amp; GM</strong></td>
-          <td>
-            • Review delivery price warnings from yesterday.<br/>
-            • Approve pending waste write-offs.
-          </td>
-          <td>
-            • Perform random surprise blind counts in the kitchen and bar.<br/>
-            • Check portion scales in the kitchen.
-          </td>
-          <td>
-            • Upload CNet sales export on <code>/sales/eod</code>.<br/>
-            • Deduct recipe ingredients.<br/>
-            • Review Food &amp; Drink Cost % Dashboard.
-          </td>
+          <td><strong>4. Executive Chef</strong></td>
+          <td>Submit 1-click Par Requisition on <code>/requests</code>.</td>
+          <td>Log butcher yield tests &amp; batch prep cooking.</td>
+          <td>Log kitchen prep waste on <code>/waste</code> &amp; count steaks.</td>
+        </tr>
+        <tr>
+          <td><strong>5. Bar Manager</strong></td>
+          <td>Submit beverage replenishment request.</td>
+          <td>Check bottle caps, seals, and log bottle breakage.</td>
+          <td>Count open spirit bottles and lock liquor cage.</td>
+        </tr>
+        <tr>
+          <td><strong>6. Purchasing Agent</strong></td>
+          <td>Review warehouse reorder needs &amp; issue POs.</td>
+          <td>Update supplier contract price books.</td>
+          <td>Confirm tomorrow morning's meat &amp; produce delivery.</td>
         </tr>
       </tbody>
     </table>
 
     <div class="callout callout-tip">
-      <div class="callout-title">How to Reset to a Clean Slate Anytime</div>
-      Whenever you want to wipe out practice data and start completely fresh with zero demo articles, run this command in your computer terminal:
+      <div class="callout-title">Quick Command: Clean Slate Reset Anytime</div>
+      Whenever you want to wipe out practice data and start completely fresh, run in your terminal:
       <br/><code>npm run db:bare</code>
-      <br/>This keeps your Prime Hospitality stores and user accounts ready, with an empty database ready for your real hotel data!
+      <br/>This keeps all stores and user accounts intact, with zero demo items, ready for your real hotel data!
     </div>
 
   </div>
